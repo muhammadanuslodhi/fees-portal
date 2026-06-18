@@ -1,40 +1,46 @@
 require('dotenv').config();
-const mongoose = require('mongoose');
-const Admin = require('../models/Admin');
-const Area = require('../models/Area');
-const Member = require('../models/Member');
-const FeeRecord = require('../models/FeeRecord');
+const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
+
+const prisma = new PrismaClient();
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 (async () => {
-  await mongoose.connect(process.env.MONGO_URI);
   console.log('Connected. Seeding...');
 
-  await Promise.all([Admin.deleteMany(), Area.deleteMany(), Member.deleteMany(), FeeRecord.deleteMany()]);
+  await prisma.feeRecord.deleteMany();
+  await prisma.member.deleteMany();
+  await prisma.area.deleteMany();
+  await prisma.admin.deleteMany();
 
-  await Admin.create({ username: 'admin', password: 'admin123' });
+  const hashed = await bcrypt.hash('admin123', 10);
+  await prisma.admin.create({ data: { username: 'admin', password: hashed } });
 
-  const area1 = await Area.create({ areaName: 'Green Valley', chairmanName: 'Mr. John Smith', chairmanSignature: '' });
-  const area2 = await Area.create({ areaName: 'Sunrise Heights', chairmanName: 'Mr. David Lee', chairmanSignature: '' });
+  const area1 = await prisma.area.create({ data: { areaName: 'Green Valley', chairmanName: 'Mr. John Smith' } });
+  const area2 = await prisma.area.create({ data: { areaName: 'Sunrise Heights', chairmanName: 'Mr. David Lee' } });
 
-  const members = await Member.create([
-    { memberName: 'Ali Khan', fatherName: 'Ahmed Khan', areaId: area1._id },
-    { memberName: 'Sara Ahmed', fatherName: 'Imran Ahmed', areaId: area1._id },
-    { memberName: 'Bilal Raza', fatherName: 'Zafar Raza', areaId: area2._id },
-  ]);
+  const members = [
+    await prisma.member.create({ data: { memberId: 'M00001', memberName: 'Ali Khan', fatherName: 'Ahmed Khan', areaId: area1.id } }),
+    await prisma.member.create({ data: { memberId: 'M00002', memberName: 'Sara Ahmed', fatherName: 'Imran Ahmed', areaId: area1.id } }),
+    await prisma.member.create({ data: { memberId: 'M00003', memberName: 'Bilal Raza', fatherName: 'Zafar Raza', areaId: area2.id } }),
+  ];
 
   const year = new Date().getFullYear();
-  const MONTHS = FeeRecord.MONTHS;
   for (const m of members) {
-    const doc = { memberId: m._id, year };
     let total = 0, pending = 0;
+    const feeData = { memberId: m.id, year };
+    
     MONTHS.forEach((mn, i) => {
       const paid = i % 2 === 0;
       const amount = 500;
-      doc[mn] = { paid, amount };
+      feeData[`${mn.toLowerCase()}Paid`] = paid;
+      feeData[`${mn.toLowerCase()}Amount`] = amount;
       if (paid) total += amount; else pending += amount;
     });
-    doc.totalAmount = total; doc.pendingAmount = pending;
-    await FeeRecord.create(doc);
+    
+    feeData.totalAmount = total;
+    feeData.pendingAmount = pending;
+    await prisma.feeRecord.create({ data: feeData });
   }
 
   console.log('Seed complete. Admin -> admin / admin123');

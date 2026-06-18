@@ -1,16 +1,20 @@
-const Area = require('../models/Area');
-const Member = require('../models/Member');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 exports.list = async (_req, res) => {
-  const areas = await Area.find().sort({ createdAt: -1 }).lean();
-  const withCount = await Promise.all(areas.map(async a => ({
-    ...a, totalMembers: await Member.countDocuments({ areaId: a._id })
-  })));
+  const areas = await prisma.area.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { _count: { select: { members: true } } }
+  });
+  const withCount = areas.map(a => ({
+    ...a,
+    totalMembers: a._count.members
+  }));
   res.json(withCount);
 };
 
 exports.get = async (req, res) => {
-  const a = await Area.findById(req.params.id);
+  const a = await prisma.area.findUnique({ where: { id: req.params.id } });
   if (!a) return res.status(404).json({ message: 'Not found' });
   res.json(a);
 };
@@ -18,19 +22,23 @@ exports.get = async (req, res) => {
 exports.create = async (req, res) => {
   const { areaName, chairmanName } = req.body;
   const chairmanSignature = req.file ? `/uploads/${req.file.filename}` : '';
-  const area = await Area.create({ areaName, chairmanName, chairmanSignature });
+  const area = await prisma.area.create({
+    data: { areaName, chairmanName, chairmanSignature }
+  });
   res.status(201).json(area);
 };
 
 exports.update = async (req, res) => {
   const update = { ...req.body };
   if (req.file) update.chairmanSignature = `/uploads/${req.file.filename}`;
-  const area = await Area.findByIdAndUpdate(req.params.id, update, { new: true });
+  const area = await prisma.area.update({
+    where: { id: req.params.id },
+    data: update
+  });
   res.json(area);
 };
 
 exports.remove = async (req, res) => {
-  await Area.findByIdAndDelete(req.params.id);
-  await Member.deleteMany({ areaId: req.params.id });
+  await prisma.area.delete({ where: { id: req.params.id } });
   res.json({ ok: true });
 };

@@ -1,44 +1,84 @@
-const FeeRecord = require('../models/FeeRecord');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-function recompute(doc) {
-  let total = 0, pending = 0;
-  for (const m of FeeRecord.MONTHS) {
-    const f = doc[m] || { paid: false, amount: 0 };
-    if (f.paid) total += Number(f.amount || 0);
-    else pending += Number(f.amount || 0);
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function extractFeeData(reqBody) {
+  const data = {};
+  for (const m of MONTHS) {
+    if (reqBody[m]) {
+      data[`${m.toLowerCase()}Paid`] = !!reqBody[m].paid;
+      data[`${m.toLowerCase()}Amount`] = Number(reqBody[m].amount || 0);
+    }
   }
-  doc.totalAmount = total;
-  doc.pendingAmount = pending;
+  return data;
+}
+
+function computeTotals(doc) {
+  let total = 0, pending = 0;
+  for (const m of MONTHS) {
+    const paid = doc[`${m.toLowerCase()}Paid`];
+    const amount = doc[`${m.toLowerCase()}Amount`];
+    if (paid) total += Number(amount || 0);
+    else pending += Number(amount || 0);
+  }
+  return { totalAmount: total, pendingAmount: pending };
+}
+
+function mapToMongooseFormat(doc) {
+  if (!doc) return null;
+  const mapped = { ...doc };
+  for (const m of MONTHS) {
+    mapped[m] = {
+      paid: doc[`${m.toLowerCase()}Paid`],
+      amount: doc[`${m.toLowerCase()}Amount`]
+    };
+  }
+  return mapped;
 }
 
 exports.list = async (req, res) => {
   const { memberId, year } = req.query;
-  const filter = {};
-  if (memberId) filter.memberId = memberId;
-  if (year) filter.year = Number(year);
-  const rows = await FeeRecord.find(filter);
-  res.json(rows);
+  const where = {};
+  if (memberId) where.memberId = memberId;
+  if (year) where.year = Number(year);
+  
+  const rows = await prisma.feeRecord.findMany({ where });
+  res.json(rows.map(mapToMongooseFormat));
 };
 
 exports.upsert = async (req, res) => {
   const { memberId, year } = req.body;
-  let doc = await FeeRecord.findOne({ memberId, year });
-  if (!doc) doc = new FeeRecord({ memberId, year });
-  for (const m of FeeRecord.MONTHS) {
-    if (req.body[m]) doc[m] = { paid: !!req.body[m].paid, amount: Number(req.body[m].amount || 0) };
-  }
-  recompute(doc);
-  await doc.save();
-  res.json(doc);
+  const numYear = Number(year);
+  
+  let doc = await prisma.feeRecord.findUnique({
+    where: { memberId_year: { memberId, year: numYear } }
+  });
+  
+  const incoming = extractFeeData(req.body);
+  const combined = { ...doc, ...incoming };
+  const totals = computeTotals(combined);
+  
+  doc = await prisma.feeRecord.upsert({
+    where: { memberId_year: { memberId, year: numYear } },
+    update: { ...incoming, ...totals },
+    create: { memberId, year: numYear, ...incoming, ...totals }
+  });
+  
+  res.json(mapToMongooseFormat(doc));
 };
 
 exports.update = async (req, res) => {
-  const doc = await FeeRecord.findById(req.params.id);
-  if (!doc) return res.status(404).json({ message: 'Not found' });
-  for (const m of FeeRecord.MONTHS) {
-    if (req.body[m]) doc[m] = { paid: !!req.body[m].paid, amount: Number(req.body[m].amount || 0) };
-  }
-  recompute(doc);
-  await doc.save();
-  res.json(doc);
+  const existing = await prisma.feeRecord.findUnique({ where: { id: req.params.id } });
+  if (!existing) return res.status(404).json({ message: 'Not found' });
+  
+  const incoming = extractFeeData(req.body);
+  const combined = { ...existing, ...incoming };
+  const totals = computeTotals(combined);
+  
+  const doc = await prisma.feeRecord.update({
+    where: { id: req.params.id },
+    data: { ...incoming, ...totals }
+  });
+  res.json(mapToMongooseFormat(doc));
 };

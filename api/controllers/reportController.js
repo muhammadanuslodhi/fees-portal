@@ -1,33 +1,70 @@
-const Area = require('../models/Area');
-const Member = require('../models/Member');
-const FeeRecord = require('../models/FeeRecord');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function mapFeeToMongooseFormat(doc) {
+  if (!doc) return null;
+  const mapped = { ...doc };
+  for (const m of MONTHS) {
+    mapped[m] = {
+      paid: doc[`${m.toLowerCase()}Paid`],
+      amount: doc[`${m.toLowerCase()}Amount`]
+    };
+  }
+  return mapped;
+}
 
 exports.areaReport = async (req, res) => {
   const { areaId } = req.params;
   const year = Number(req.query.year) || new Date().getFullYear();
-  const area = await Area.findById(areaId);
+  
+  const area = await prisma.area.findUnique({ where: { id: areaId } });
   if (!area) return res.status(404).json({ message: 'Area not found' });
-  const members = await Member.find({ areaId }).sort({ memberId: 1 });
-  const fees = await FeeRecord.find({ year, memberId: { $in: members.map(m => m._id) } });
-  const feeMap = Object.fromEntries(fees.map(f => [String(f.memberId), f]));
-  const rows = members.map(m => ({ member: m, fee: feeMap[String(m._id)] || null }));
+  
+  const members = await prisma.member.findMany({
+    where: { areaId },
+    orderBy: { memberId: 'asc' }
+  });
+  
+  const memberIds = members.map(m => m.id);
+  const fees = await prisma.feeRecord.findMany({
+    where: { year, memberId: { in: memberIds } }
+  });
+  
+  const feeMap = Object.fromEntries(fees.map(f => [f.memberId, mapFeeToMongooseFormat(f)]));
+  const rows = members.map(m => ({ member: m, fee: feeMap[m.id] || null }));
+  
   const totalCollected = fees.reduce((s, f) => s + f.totalAmount, 0);
   const totalPending = fees.reduce((s, f) => s + f.pendingAmount, 0);
+  const latestUpdate = fees.reduce((d, f) => f.updatedAt > d ? f.updatedAt : d, new Date(0));
+  
   res.json({
     area, year, rows,
     summary: { totalMembers: members.length, totalCollected, totalPending },
-    latestUpdate: fees.reduce((d, f) => f.updatedAt > d ? f.updatedAt : d, new Date(0)),
+    latestUpdate,
   });
 };
 
 exports.dashboard = async (_req, res) => {
   const [totalAreas, totalMembers, fees] = await Promise.all([
-    Area.countDocuments(),
-    Member.countDocuments(),
-    FeeRecord.find().sort({ updatedAt: -1 }).limit(10).populate({ path: 'memberId', populate: { path: 'areaId' } }),
+    prisma.area.count(),
+    prisma.member.count(),
+    prisma.feeRecord.findMany({
+      orderBy: { updatedAt: 'desc' },
+      take: 10,
+      include: { member: { include: { area: true } } }
+    }),
   ]);
-  const allFees = await FeeRecord.find();
+  
+  const allFees = await prisma.feeRecord.findMany();
   const totalCollected = allFees.reduce((s, f) => s + f.totalAmount, 0);
   const totalPending = allFees.reduce((s, f) => s + f.pendingAmount, 0);
-  res.json({ totalAreas, totalMembers, totalCollected, totalPending, latest: fees });
+  
+  const mappedFees = fees.map(f => {
+    const mFee = mapFeeToMongooseFormat(f);
+    mFee.memberId = { ...f.member, areaId: f.member.area }; // simulate populate
+    return mFee;
+  });
+  
+  res.json({ totalAreas, totalMembers, totalCollected, totalPending, latest: mappedFees });
 };

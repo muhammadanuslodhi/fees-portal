@@ -1,32 +1,60 @@
-const Member = require('../models/Member');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 exports.list = async (req, res) => {
   const { areaId, q, memberId } = req.query;
-  const filter = {};
-  if (areaId) filter.areaId = areaId;
-  if (memberId) filter.memberId = new RegExp(memberId, 'i');
-  if (q) filter.memberName = new RegExp(q, 'i');
-  const members = await Member.find(filter).populate('areaId', 'areaName').sort({ createdAt: -1 });
-  res.json(members);
+  const where = {};
+  if (areaId) where.areaId = areaId;
+  if (memberId) where.memberId = { contains: memberId, mode: 'insensitive' };
+  if (q) where.memberName = { contains: q, mode: 'insensitive' };
+  
+  const members = await prisma.member.findMany({
+    where,
+    include: { area: { select: { areaName: true } } },
+    orderBy: { createdAt: 'desc' }
+  });
+  
+  // map area relation to areaId object to match old Mongoose populate format
+  const mapped = members.map(m => ({
+    ...m,
+    areaId: m.area
+  }));
+  res.json(mapped);
 };
 
 exports.get = async (req, res) => {
-  const m = await Member.findById(req.params.id).populate('areaId');
+  const m = await prisma.member.findUnique({
+    where: { id: req.params.id },
+    include: { area: true }
+  });
   if (!m) return res.status(404).json({ message: 'Not found' });
-  res.json(m);
+  const mapped = { ...m, areaId: m.area };
+  res.json(mapped);
 };
 
 exports.create = async (req, res) => {
-  const m = await Member.create(req.body);
+  // auto generate memberId logic
+  const count = await prisma.member.count();
+  const nextId = 'M' + String(count + 1).padStart(5, '0');
+  
+  const m = await prisma.member.create({
+    data: {
+      ...req.body,
+      memberId: nextId
+    }
+  });
   res.status(201).json(m);
 };
 
 exports.update = async (req, res) => {
-  const m = await Member.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  const m = await prisma.member.update({
+    where: { id: req.params.id },
+    data: req.body
+  });
   res.json(m);
 };
 
 exports.remove = async (req, res) => {
-  await Member.findByIdAndDelete(req.params.id);
+  await prisma.member.delete({ where: { id: req.params.id } });
   res.json({ ok: true });
 };
