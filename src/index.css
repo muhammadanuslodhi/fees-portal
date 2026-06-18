@@ -5,20 +5,14 @@
 @layer base {
   html, body, #root { height: 100%; scroll-behavior: smooth; }
   body { 
-    @apply font-sans text-gray-800 antialiased bg-gray-50 transition-colors duration-300; 
-  }
-
-  .dark body { 
-    @apply bg-dark-900 text-gray-100; 
+    @apply font-sans text-slate-100 antialiased bg-slate-900 selection:bg-brand-500 selection:text-white; 
   }
 
   /* Custom Scrollbar */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { @apply bg-gray-300 rounded-full; }
-  .dark ::-webkit-scrollbar-thumb { @apply bg-gray-700; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-gray-400; }
-  .dark ::-webkit-scrollbar-thumb:hover { @apply bg-gray-600; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-700 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-600; }
 }
 
 @layer components {
@@ -27,50 +21,50 @@
     @apply inline-flex items-center justify-center px-4 py-2 rounded-xl font-medium transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md; 
   }
   .btn-primary { 
-    @apply btn bg-gradient-to-r from-brand-600 to-brand-500 text-white hover:from-brand-700 hover:to-brand-600 border border-transparent shadow-brand-500/20 hover:shadow-brand-500/40; 
+    @apply btn bg-gradient-to-r from-brand-600 to-indigo-600 text-white hover:from-brand-500 hover:to-indigo-500 border border-transparent shadow-brand-500/20 hover:shadow-brand-500/40; 
   }
   .btn-secondary { 
-    @apply btn bg-white/80 backdrop-blur-md border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 dark:bg-gray-800/80 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:border-gray-600; 
+    @apply btn bg-slate-800/80 backdrop-blur-md border border-slate-700 text-slate-300 hover:bg-slate-700 hover:border-slate-600 hover:text-white; 
   }
   .btn-danger { 
-    @apply btn bg-gradient-to-r from-red-600 to-red-500 text-white hover:from-red-700 hover:to-red-600 shadow-red-500/20 hover:shadow-red-500/40; 
+    @apply btn bg-gradient-to-r from-rose-600 to-red-500 text-white hover:from-rose-500 hover:to-red-400 shadow-rose-500/20 hover:shadow-rose-500/40; 
   }
   .btn-success { 
-    @apply btn bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-700 hover:to-emerald-600 shadow-emerald-500/20 hover:shadow-emerald-500/40; 
+    @apply btn bg-gradient-to-r from-emerald-600 to-teal-500 text-white hover:from-emerald-500 hover:to-teal-400 shadow-emerald-500/20 hover:shadow-emerald-500/40; 
   }
 
   /* Forms */
   .input { 
-    @apply w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white/50 backdrop-blur-sm focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition-all duration-200 placeholder-gray-400 dark:bg-gray-800/50 dark:border-gray-700 dark:focus:border-brand-500 dark:text-white dark:placeholder-gray-500 hover:border-gray-300 dark:hover:border-gray-600; 
+    @apply w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-800/50 backdrop-blur-sm focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 outline-none transition-all duration-200 placeholder-slate-500 text-slate-100 hover:border-slate-600; 
   }
   .label { 
-    @apply block text-sm font-semibold text-gray-700 mb-1.5 dark:text-gray-300; 
+    @apply block text-sm font-semibold text-slate-300 mb-1.5; 
   }
 
   /* Cards - Glassmorphism */
   .card { 
-    @apply bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-glass p-6 transition-all duration-300 dark:bg-dark-800/70 dark:border-white/5 dark:shadow-glass-dark relative overflow-hidden; 
+    @apply bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] p-6 transition-all duration-300 relative overflow-hidden; 
   }
   
   .card-hover {
-    @apply hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-brand-900/20;
+    @apply hover:-translate-y-1 hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.4)] hover:border-slate-600/50;
   }
 
   /* Badges */
   .badge-green { 
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 shadow-sm; 
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-900/30 text-emerald-400 border border-emerald-800/50 shadow-sm; 
   }
   .badge-red { 
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border border-rose-200 dark:border-rose-800/50 shadow-sm; 
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-rose-900/30 text-rose-400 border border-rose-800/50 shadow-sm; 
   }
   
   /* Table styling enhancements */
   .table-row-hover {
-    @apply border-t border-gray-100 dark:border-gray-800 transition-colors duration-150 hover:bg-gray-50/80 dark:hover:bg-gray-800/50;
+    @apply border-t border-slate-700/50 transition-colors duration-150 hover:bg-slate-800/50;
   }
 }
 
 /* Gradients for text */
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-indigo-500 dark:from-brand-400 dark:to-indigo-300;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-400 to-indigo-400;
 }

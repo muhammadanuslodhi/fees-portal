@@ -45,7 +45,7 @@ export default function FeePortal() {
   };
 
   const deleteMember = async (id) => {
-    if (!confirm('Delete this member?')) return;
+    if (!confirm('Are you sure you want to delete this member?')) return;
     await api.delete(`/members/${id}`); toast.success('Deleted'); load();
   };
 
@@ -75,7 +75,6 @@ export default function FeePortal() {
     doc.setFontSize(11);
     doc.text(`Total Members: ${report.summary.totalMembers}`, 14, finalY);
     doc.text(`Total Collected: $${report.summary.totalCollected}`, 80, finalY);
-    // doc.text(`Total Pending: $${report.summary.totalPending}`, 160, finalY);
 
     if (report.area.chairmanSignature) {
       try {
@@ -88,117 +87,219 @@ export default function FeePortal() {
     doc.save(`${report.area.areaName}-${year}.pdf`);
   };
 
-  if (loading || !report) return <p className="text-center py-10">Loading...</p>;
+  if (loading || !report) return (
+    <div className="flex flex-col items-center justify-center py-20 space-y-4 animate-pulse">
+      <div className="w-12 h-12 rounded-full border-4 border-slate-700 border-t-brand-500 animate-spin shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+      <p className="text-slate-400 font-medium">Loading area details...</p>
+    </div>
+  );
 
   const filtered = report.rows.filter(r =>
     !search || r.member.memberName.toLowerCase().includes(search.toLowerCase()) || r.member.memberId.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="space-y-4">
-      <div className="card flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold">{report.area.areaName}</h1>
-          <p className="text-sm text-gray-500">Latest update: {new Date(report.latestUpdate).toLocaleString()}</p>
+    <div className="space-y-6 animate-slide-up relative z-10">
+      <div className="card flex flex-col xl:flex-row xl:items-center justify-between gap-6 bg-slate-800/80 border-slate-700/50 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="relative z-10">
+          <h1 className="text-3xl font-extrabold text-white tracking-tight drop-shadow-md flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center border border-brand-500/30">
+              <svg className="w-5 h-5 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+            </div>
+            {report.area.areaName}
+          </h1>
+          <p className="text-sm text-slate-400 mt-2 font-medium">Latest update: <span className="text-slate-300">{new Date(report.latestUpdate).toLocaleString()}</span></p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button className="btn-success" onClick={()=>setShowAdd(true)}>+ Add Member</button>
-          <input className="input !w-48" placeholder="Search member..." value={search} onChange={e=>setSearch(e.target.value)}/>
-          <select className="input !w-32" value={year} onChange={e=>setYear(Number(e.target.value))}>
+        
+        <div className="flex flex-wrap items-center gap-3 relative z-10">
+          <div className="relative flex-1 min-w-[200px]">
+            <input className="input pl-10 h-11" placeholder="Search member..." value={search} onChange={e=>setSearch(e.target.value)}/>
+            <svg className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          </div>
+          
+          <select className="input h-11 !w-32 cursor-pointer font-bold" value={year} onChange={e=>setYear(Number(e.target.value))}>
             {years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
-          <button className="btn-primary" onClick={exportPDF}>Export PDF</button>
+          
+          <div className="w-px h-10 bg-slate-700/50 mx-1 hidden sm:block"></div>
+          
+          <button className="btn-success h-11 px-5 shadow-emerald-500/20" onClick={()=>setShowAdd(true)}>
+            <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+            Member
+          </button>
+          <button className="btn-primary h-11 px-5" onClick={exportPDF}>
+            <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+            PDF
+          </button>
         </div>
       </div>
 
-      <div className="card overflow-x-auto">
-        <table className="min-w-full text-xs">
-          <thead className="bg-gray-50 sticky top-0">
-            <tr>
-              <th className="p-2">#</th><th className="p-2">ID</th><th className="p-2 text-left">Name</th><th className="p-2 text-left">Father</th>
-              {SHORT.map(m => <th key={m} className="p-2">{m}</th>)}
-              <th className="p-2">Total</th><th className="p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((r, i) => (
-              <tr key={r.member.id} className="border-t hover:bg-gray-50">
-                <td className="p-2 text-center">{i+1}</td>
-                <td className="p-2 font-mono">{r.member.memberId}</td>
-                <td className="p-2">{r.member.memberName}</td>
-                <td className="p-2">{r.member.fatherName}</td>
-                {/* <td className="p-2 text-center text-red-600 font-medium">${r.fee?.pendingAmount || 0}</td> */}
-                {MONTHS.map(m => (
-                  <td key={m} className="p-2 text-center">
-                    {r.fee?.[m]?.paid ? <span className="badge-green">Paid</span> : <span className="badge-red">Unpaid</span>}
-                  </td>
-                ))}
-                <td className="p-2 text-center text-green-600 font-semibold">{r.fee?.totalAmount || 0}</td>
-                <td className="p-2 whitespace-nowrap space-x-1">
-                  <button className="btn-primary !py-1 !px-2 text-xs" onClick={()=>openUpdate(r)}>Update Fee</button>
-                  <button className="btn-danger !py-1 !px-2 text-xs" onClick={()=>deleteMember(r.member.id)}>Delete</button>
-                </td>
+      <div className="card p-0 overflow-hidden bg-slate-800/80 border-slate-700/50 shadow-2xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-xs">
+            <thead className="bg-slate-900/80 text-slate-400 font-bold uppercase tracking-wider sticky top-0 z-10 border-b border-slate-700/50 shadow-sm">
+              <tr>
+                <th className="p-3">#</th>
+                <th className="p-3">ID</th>
+                <th className="p-3 text-left">Name</th>
+                <th className="p-3 text-left">Father</th>
+                {SHORT.map(m => <th key={m} className="p-3 text-center">{m}</th>)}
+                <th className="p-3 text-center">Total</th>
+                <th className="p-3 text-right">Actions</th>
               </tr>
-            ))}
-            {!filtered.length && <tr><td colSpan="100" className="text-center p-6 text-gray-500">No members</td></tr>}
-          </tbody>
-          <tfoot className="bg-gray-50 font-semibold">
-            <tr>
-              <td colSpan="4" className="p-3">Total Members: {report.summary.totalMembers}</td>
-              {/* <td className="p-3 text-center text-red-600">${report.summary.totalPending}</td> */}
-              <td colSpan="12"></td>
-              <td className="p-3 text-center text-green-600">{report.summary.totalCollected}</td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-700/50">
+              {filtered.map((r, i) => (
+                <tr key={r.member.id} className="table-row-hover group transition-colors">
+                  <td className="p-3 text-center text-slate-500 font-medium">{i+1}</td>
+                  <td className="p-3">
+                    <span className="font-mono text-xs font-bold px-2 py-1 bg-slate-900/80 rounded text-slate-300 border border-slate-700">
+                      {r.member.memberId}
+                    </span>
+                  </td>
+                  <td className="p-3 font-bold text-slate-100">{r.member.memberName}</td>
+                  <td className="p-3 text-slate-400">{r.member.fatherName}</td>
+                  
+                  {MONTHS.map(m => (
+                    <td key={m} className="p-3 text-center">
+                      {r.fee?.[m]?.paid ? (
+                        <span className="w-6 h-6 inline-flex items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                        </span>
+                      ) : (
+                        <span className="w-6 h-6 inline-flex items-center justify-center rounded-full bg-rose-500/10 text-rose-400/50 border border-rose-500/20">
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </span>
+                      )}
+                    </td>
+                  ))}
+                  
+                  <td className="p-3 text-center font-extrabold text-emerald-400">
+                    Rs: {r.fee?.totalAmount?.toLocaleString() || 0}
+                  </td>
+                  <td className="p-3 text-right whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button className="btn-secondary !py-1 !px-2 text-xs font-bold mr-1 text-brand-400 border-brand-500/30 hover:bg-brand-500/10" onClick={()=>openUpdate(r)}>Fee</button>
+                    <button className="btn-secondary !py-1 !px-2 text-xs font-bold text-rose-400 border-rose-500/30 hover:bg-rose-500/10" onClick={()=>deleteMember(r.member.id)}>Del</button>
+                  </td>
+                </tr>
+              ))}
+              {!filtered.length && (
+                <tr>
+                  <td colSpan="18" className="text-center p-16 text-slate-500">
+                    <div className="p-4 bg-slate-800 inline-block rounded-full mb-3 shadow-inner border border-slate-700">
+                      <svg className="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    </div>
+                    <p className="text-base font-bold text-slate-300">No members found</p>
+                    <p className="mt-1 text-sm">Add members to this area to see them in the report.</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+            <tfoot className="bg-slate-900/80 font-bold border-t-2 border-slate-700 shadow-inner">
+              <tr>
+                <td colSpan="4" className="p-4 text-slate-300">
+                  <span className="text-slate-500 mr-2 uppercase tracking-wider text-[10px]">Total Members</span>
+                  {report.summary.totalMembers}
+                </td>
+                <td colSpan="12"></td>
+                <td className="p-4 text-center">
+                  <span className="text-slate-500 block uppercase tracking-wider text-[10px] mb-0.5">Total Collected</span>
+                  <span className="text-emerald-400 text-sm drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]">Rs: {report.summary.totalCollected?.toLocaleString()}</span>
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </div>
 
-      <div className="card text-center">
-        <h3 className="text-sm uppercase tracking-wide text-gray-500 mb-2">Chairman Signature</h3>
-        {report.area.chairmanSignature
-          ? <img src={API_ORIGIN + report.area.chairmanSignature} alt="signature" className="h-20 mx-auto" />
-          : <p className="text-gray-400 italic">No signature uploaded</p>}
-        <p className="mt-2 font-medium">{report.area.chairmanName}</p>
+      <div className="card text-center bg-slate-800/80 border-slate-700/50 w-full max-w-sm mx-auto shadow-lg relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl pointer-events-none"></div>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 flex items-center justify-center gap-2">
+          <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+          Chairman Signature
+        </h3>
+        <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700/80 mb-3 mx-8 shadow-inner h-24 flex items-center justify-center">
+          {report.area.chairmanSignature
+            ? <img src={API_ORIGIN + report.area.chairmanSignature} alt="signature" className="h-full w-full object-contain filter invert opacity-80" />
+            : <p className="text-slate-500 italic text-sm">No signature uploaded</p>}
+        </div>
+        <p className="font-extrabold text-white text-lg tracking-wide">{report.area.chairmanName}</p>
       </div>
 
       {editing && (
-        <div className="fixed inset-0 bg-black/40 grid place-items-center z-50 p-4">
-          <div className="card w-full max-w-2xl">
-            <h2 className="text-lg font-semibold mb-3">Update Fees — {editing.member.memberName} ({year})</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md grid place-items-center z-50 p-4 animate-fade-in">
+          <div className="card w-full max-w-2xl bg-slate-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] border-slate-600">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-extrabold text-white">Update Fees</h2>
+                <p className="text-slate-400 text-sm mt-1">{editing.member.memberName} — Year {year}</p>
+              </div>
+              <button className="text-slate-400 hover:text-white p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 transition-colors" onClick={() => setEditing(null)}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[55vh] overflow-y-auto pr-2 custom-scrollbar">
               {MONTHS.map(m => (
-                <div key={m} className="border rounded-lg p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">{m}</span>
-                    <label className="flex items-center gap-1 text-xs">
-                      <input type="checkbox" checked={editing.fee[m].paid}
-                        onChange={e => setEditing({...editing, fee:{...editing.fee, [m]:{...editing.fee[m], paid:e.target.checked}}})}/>
-                      Paid
+                <div key={m} className={`border rounded-xl p-3 transition-colors ${editing.fee[m].paid ? 'border-brand-500/50 bg-brand-500/5' : 'border-slate-700 bg-slate-900/50'}`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-bold text-slate-200">{m}</span>
+                    <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer select-none">
+                      <div className="relative flex items-center">
+                        <input type="checkbox" className="sr-only peer" checked={editing.fee[m].paid}
+                          onChange={e => setEditing({...editing, fee:{...editing.fee, [m]:{...editing.fee[m], paid:e.target.checked}}})}/>
+                        <div className="w-9 h-5 bg-slate-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brand-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+                      </div>
+                      <span className={editing.fee[m].paid ? 'text-brand-400' : 'text-slate-500'}>Paid</span>
                     </label>
                   </div>
-                  <input type="number" className="input" value={editing.fee[m].amount}
-                    onChange={e => setEditing({...editing, fee:{...editing.fee, [m]:{...editing.fee[m], amount:Number(e.target.value)}}})}/>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">Rs</span>
+                    <input type="number" className="input pl-9 !py-2 bg-slate-800 border-slate-600 focus:bg-slate-900" value={editing.fee[m].amount}
+                      onChange={e => setEditing({...editing, fee:{...editing.fee, [m]:{...editing.fee[m], amount:Number(e.target.value)}}})}/>
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="flex justify-end gap-2 mt-4">
-              <button className="btn-secondary" onClick={()=>setEditing(null)}>Cancel</button>
-              <button className="btn-primary" onClick={saveFee}>Save</button>
+            <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-700/50">
+              <button className="btn-secondary py-3 px-6 font-bold" onClick={()=>setEditing(null)}>Cancel</button>
+              <button className="btn-primary py-3 px-8 font-bold" onClick={saveFee}>Save Changes</button>
             </div>
           </div>
         </div>
       )}
 
       {showAdd && (
-        <div className="fixed inset-0 bg-black/40 grid place-items-center z-50 p-4">
-          <form onSubmit={addMember} className="card w-full max-w-md space-y-3">
-            <h2 className="text-lg font-semibold">Add Member to {report.area.areaName}</h2>
-            <div><label className="label">Member Name</label><input className="input" value={newMember.memberName} onChange={e=>setNewMember({...newMember,memberName:e.target.value})} required/></div>
-            <div><label className="label">Father Name</label><input className="input" value={newMember.fatherName} onChange={e=>setNewMember({...newMember,fatherName:e.target.value})} required/></div>
-            <div className="flex justify-end gap-2">
-              <button type="button" className="btn-secondary" onClick={()=>setShowAdd(false)}>Cancel</button>
-              <button className="btn-primary">Add</button>
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md grid place-items-center z-50 p-4 animate-fade-in">
+          <form onSubmit={addMember} className="card w-full max-w-md space-y-5 bg-slate-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] border-slate-600">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-extrabold text-white">Add Member to {report.area.areaName}</h2>
+              <button type="button" className="text-slate-400 hover:text-white p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 transition-colors" onClick={() => setShowAdd(false)}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="label">Full Name</label>
+                <input className="input" placeholder="e.g. Ali Khan" value={newMember.memberName} onChange={e=>setNewMember({...newMember,memberName:e.target.value})} required/>
+              </div>
+              <div>
+                <label className="label">Father's Name</label>
+                <input className="input" placeholder="e.g. Ahmed Khan" value={newMember.fatherName} onChange={e=>setNewMember({...newMember,fatherName:e.target.value})} required/>
+              </div>
+            </div>
+
+            <div className="bg-brand-500/10 text-brand-300 p-3 rounded-xl flex items-center gap-2 text-sm font-medium border border-brand-500/20 shadow-inner">
+              <svg className="w-5 h-5 shrink-0 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              A unique Member ID will be generated.
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-700/50">
+              <button type="button" className="btn-secondary py-3 px-6 font-bold" onClick={()=>setShowAdd(false)}>Cancel</button>
+              <button className="btn-primary py-3 px-8 font-bold">Add Member</button>
             </div>
           </form>
         </div>
