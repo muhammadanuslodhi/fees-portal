@@ -91,6 +91,9 @@ export default function Login() {
             >
               {loading ? 'Authenticating...' : 'Sign In'}
             </button>
+            <p className="mt-4 text-center text-sm text-slate-400 bg-slate-800/50 p-2 rounded-lg border border-slate-700/50">
+              Demo Credentials: <span className="font-bold text-white px-1">admin</span> / <span className="font-bold text-white px-1">admin123</span>
+            </p>
           </form>
 
           <div className="mt-8">
