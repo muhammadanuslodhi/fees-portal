@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Area {
+  id                String   @id @default(cuid())
+  areaName          String
+  chairmanName      String
+  chairmanSignature String   @default("")
+  members           Member[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Member {
+  id         String      @id @default(cuid())
+  memberId   String      @unique
+  memberName String
+  fatherName String
+  areaId     String
+  area       Area        @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  fees       FeeRecord[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model FeeRecord {
+  id            String   @id @default(cuid())
+  memberId      String
+  member        Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  year          Int
+  totalAmount   Int      @default(0)
+  pendingAmount Int      @default(0)
+
+  // Monthly breakdown
+  januaryPaid   Boolean @default(false)
+  januaryAmount Int     @default(0)
+  februaryPaid  Boolean @default(false)
+  februaryAmount Int    @default(0)
+  marchPaid     Boolean @default(false)
+  marchAmount   Int     @default(0)
+  aprilPaid     Boolean @default(false)
+  aprilAmount   Int     @default(0)
+  mayPaid       Boolean @default(false)
+  mayAmount     Int     @default(0)
+  junePaid      Boolean @default(false)
+  juneAmount    Int     @default(0)
+  julyPaid      Boolean @default(false)
+  julyAmount    Int     @default(0)
+  augustPaid    Boolean @default(false)
+  augustAmount  Int     @default(0)
+  septemberPaid Boolean @default(false)
+  septemberAmount Int   @default(0)
+  octoberPaid   Boolean @default(false)
+  octoberAmount Int     @default(0)
+  novemberPaid  Boolean @default(false)
+  novemberAmount Int    @default(0)
+  decemberPaid  Boolean @default(false)
+  decemberAmount Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([memberId, year])
+}
