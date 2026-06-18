@@ -23,7 +23,7 @@ export default function Areas() {
     fd.append('chairmanName', form.chairmanName);
     if (form.file) fd.append('chairmanSignature', form.file);
     try {
-      if (editing) await api.put(`/areas/${editing._id}`, fd);
+      if (editing) await api.put(`/areas/${editing.id}`, fd);
       else await api.post('/areas', fd);
       toast.success('Saved'); setShow(false); load();
     } catch (e) { toast.error('Save failed'); }
@@ -55,15 +55,15 @@ export default function Areas() {
             </thead>
             <tbody>
               {areas.map(a => (
-                <tr key={a._id} className="border-t">
+                <tr key={a.id} className="border-t">
                   <td className="p-3 font-medium">{a.areaName}</td>
                   <td className="p-3">{a.chairmanName}</td>
                   <td className="p-3">{a.totalMembers}</td>
                   <td className="p-3">{a.chairmanSignature ? <img src={API_ORIGIN + a.chairmanSignature} className="h-10" /> : '-'}</td>
                   <td className="p-3 space-x-2">
-                    <Link className="btn-secondary !py-1 !px-3 text-xs" to={`/fees/${a._id}`}>View</Link>
+                    <Link className="btn-secondary !py-1 !px-3 text-xs" to={`/fees/${a.id}`}>View</Link>
                     <button className="btn-secondary !py-1 !px-3 text-xs" onClick={() => openEdit(a)}>Edit</button>
-                    <button className="btn-danger !py-1 !px-3 text-xs" onClick={() => remove(a._id)}>Delete</button>
+                    <button className="btn-danger !py-1 !px-3 text-xs" onClick={() => remove(a.id)}>Delete</button>
                   </td>
                 </tr>
               ))}

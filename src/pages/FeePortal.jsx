@@ -31,14 +31,14 @@ export default function FeePortal() {
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [areaId, year]);
 
   const openUpdate = (row) => {
-    const fee = row.fee || { memberId: row.member._id, year };
+    const fee = row.fee || { memberId: row.member.id, year };
     const base = {};
     MONTHS.forEach(m => base[m] = fee[m] || { paid:false, amount:500 });
     setEditing({ member: row.member, fee: { ...fee, ...base } });
   };
 
   const saveFee = async () => {
-    const payload = { memberId: editing.member._id, year };
+    const payload = { memberId: editing.member.id, year };
     MONTHS.forEach(m => payload[m] = editing.fee[m]);
     await api.post('/fees', payload);
     toast.success('Updated'); setEditing(null); load();
@@ -122,7 +122,7 @@ export default function FeePortal() {
           </thead>
           <tbody>
             {filtered.map((r, i) => (
-              <tr key={r.member._id} className="border-t hover:bg-gray-50">
+              <tr key={r.member.id} className="border-t hover:bg-gray-50">
                 <td className="p-2 text-center">{i+1}</td>
                 <td className="p-2 font-mono">{r.member.memberId}</td>
                 <td className="p-2">{r.member.memberName}</td>
@@ -136,7 +136,7 @@ export default function FeePortal() {
                 <td className="p-2 text-center text-green-600 font-semibold">{r.fee?.totalAmount || 0}</td>
                 <td className="p-2 whitespace-nowrap space-x-1">
                   <button className="btn-primary !py-1 !px-2 text-xs" onClick={()=>openUpdate(r)}>Update Fee</button>
-                  <button className="btn-danger !py-1 !px-2 text-xs" onClick={()=>deleteMember(r.member._id)}>Delete</button>
+                  <button className="btn-danger !py-1 !px-2 text-xs" onClick={()=>deleteMember(r.member.id)}>Delete</button>
                 </td>
               </tr>
             ))}

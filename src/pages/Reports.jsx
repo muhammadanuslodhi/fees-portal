@@ -10,7 +10,7 @@ export default function Reports() {
       <h1 className="text-2xl font-bold">Reports</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {areas.map(a => (
-          <Link key={a._id} to={`/fees/${a._id}`} className="card hover:shadow-lg transition">
+          <Link key={a.id} to={`/fees/${a.id}`} className="card hover:shadow-lg transition">
             <h3 className="font-semibold text-lg">{a.areaName}</h3>
             <p className="text-sm text-gray-500">Chairman: {a.chairmanName}</p>
             <p className="text-sm text-gray-500">Members: {a.totalMembers}</p>

@@ -32,7 +32,7 @@ export default function Dashboard() {
         <div className="flex flex-col sm:flex-row gap-2">
           <select className="input sm:max-w-sm" value={selected} onChange={e => setSelected(e.target.value)}>
             <option value="">Select existing area</option>
-            {areas.map(a => <option key={a._id} value={a._id}>{a.areaName}</option>)}
+            {areas.map(a => <option key={a.id} value={a.id}>{a.areaName}</option>)}
           </select>
           <button className="btn-primary" disabled={!selected} onClick={() => nav(`/fees/${selected}`)}>Search Area</button>
           <Link to="/areas" className="btn-secondary">View All Areas</Link>
@@ -56,7 +56,7 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {stats.latest.map(f => (
-                <tr key={f._id} className="border-t">
+                <tr key={f.id} className="border-t">
                   <td className="p-2">{f.memberId?.memberName || '-'}</td>
                   <td className="p-2">{f.memberId?.areaId?.areaName || '-'}</td>
                   <td className="p-2">{f.year}</td>

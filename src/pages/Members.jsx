@@ -19,13 +19,13 @@ export default function Members() {
   useEffect(() => { api.get('/areas').then(r => setAreas(r.data)); load(); }, []);
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [filter.areaId]);
 
-  const openNew = () => { setEditing(null); setForm({ memberName:'', fatherName:'', areaId: areas[0]?._id || '' }); setShow(true); };
-  const openEdit = (m) => { setEditing(m); setForm({ memberName:m.memberName, fatherName:m.fatherName, areaId:m.areaId?._id||m.areaId }); setShow(true); };
+  const openNew = () => { setEditing(null); setForm({ memberName:'', fatherName:'', areaId: areas[0]?.id || '' }); setShow(true); };
+  const openEdit = (m) => { setEditing(m); setForm({ memberName:m.memberName, fatherName:m.fatherName, areaId:m.areaId?.id||m.areaId }); setShow(true); };
 
   const save = async (e) => {
     e.preventDefault();
     try {
-      if (editing) await api.put(`/members/${editing._id}`, form);
+      if (editing) await api.put(`/members/${editing.id}`, form);
       else await api.post('/members', form);
       toast.success('Saved'); setShow(false); load();
     } catch { toast.error('Save failed'); }
@@ -49,7 +49,7 @@ export default function Members() {
       <div className="card grid grid-cols-1 md:grid-cols-4 gap-3">
         <select className="input" value={filter.areaId} onChange={e=>setFilter({...filter,areaId:e.target.value})}>
           <option value="">All Areas</option>
-          {areas.map(a => <option key={a._id} value={a._id}>{a.areaName}</option>)}
+          {areas.map(a => <option key={a.id} value={a.id}>{a.areaName}</option>)}
         </select>
         <input className="input" placeholder="Search by name" value={filter.q} onChange={e=>setFilter({...filter,q:e.target.value})}/>
         <input className="input" placeholder="Search by Member ID" value={filter.memberId} onChange={e=>setFilter({...filter,memberId:e.target.value})}/>
@@ -63,14 +63,14 @@ export default function Members() {
           </thead>
           <tbody>
             {paged.map(m => (
-              <tr key={m._id} className="border-t">
+              <tr key={m.id} className="border-t">
                 <td className="p-3 font-mono">{m.memberId}</td>
                 <td className="p-3">{m.memberName}</td>
                 <td className="p-3">{m.fatherName}</td>
                 <td className="p-3">{m.areaId?.areaName || '-'}</td>
                 <td className="p-3 space-x-2">
                   <button className="btn-secondary !py-1 !px-3 text-xs" onClick={()=>openEdit(m)}>Edit</button>
-                  <button className="btn-danger !py-1 !px-3 text-xs" onClick={()=>remove(m._id)}>Delete</button>
+                  <button className="btn-danger !py-1 !px-3 text-xs" onClick={()=>remove(m.id)}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -96,7 +96,7 @@ export default function Members() {
             <div><label className="label">Area</label>
               <select className="input" value={form.areaId} onChange={e=>setForm({...form,areaId:e.target.value})} required>
                 <option value="">Select area</option>
-                {areas.map(a => <option key={a._id} value={a._id}>{a.areaName}</option>)}
+                {areas.map(a => <option key={a.id} value={a.id}>{a.areaName}</option>)}
               </select>
             </div>
             <p className="text-xs text-gray-500">Member ID will be auto-generated.</p>
