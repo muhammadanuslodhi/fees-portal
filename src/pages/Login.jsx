@@ -50,7 +50,7 @@ export default function Login() {
         {/* Hero Content */}
         <div className="relative space-y-6">
           <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight">
-            Manage your<br />fees smarter.
+            اپنی فیسوں کا انتظام<br />زیادہ سمجھداری سے کریں۔
           </h1>
           <p className="text-primary-100 text-base leading-relaxed">
             Track payments, manage members, and generate reports — all in one place.
