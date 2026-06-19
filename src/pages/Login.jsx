@@ -5,7 +5,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Login() {
-  const [form, setForm] = useState({ username: 'admin', password: 'admin123' });
+  const [form, setForm] = useState({ username: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -20,115 +20,167 @@ export default function Login() {
       toast.success('Welcome back!');
       nav('/');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+      toast.error(err.response?.data?.message || 'Invalid credentials');
     } finally { setLoading(false); }
   };
 
-  const loginAsGuest = () => {
-    login('guest_token', 'Guest User');
-    toast.success('Welcome, Guest!');
-    nav('/');
-  };
-
   return (
-    <div className="min-h-screen flex text-slate-100 bg-slate-900 selection:bg-brand-500 selection:text-white">
-      {/* Left side - Visuals */}
-      <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden">
-        <img 
-          src="/login-bg.png" 
-          alt="Abstract Background" 
-          className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 mix-blend-screen transition-transform duration-700 hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-slate-900/20 z-10 pointer-events-none"></div>
-        <div className="relative z-20 text-center px-12 max-w-lg p-10 rounded-3xl border border-white/10 backdrop-blur-md bg-black/20 shadow-2xl">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-400 to-indigo-600 text-white grid place-items-center font-bold text-4xl mx-auto mb-6 shadow-lg shadow-brand-500/30">F</div>
-          <h1 className="text-4xl font-extrabold mb-4 tracking-tight text-white">Fees Portal</h1>
-          <p className="text-lg text-slate-300 leading-relaxed">
-            Manage your institution's finances securely and efficiently with our premium dashboard.
+    <div className="min-h-screen flex bg-surface-100 font-sans">
+      
+      {/* Left Panel */}
+      <div className="hidden lg:flex flex-col justify-between w-[420px] xl:w-[480px] bg-gradient-to-br from-primary-600 via-primary-500 to-primary-700 p-12 relative overflow-hidden shrink-0">
+        {/* Background decoration */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-white/10"></div>
+          <div className="absolute top-1/3 -right-16 w-48 h-48 rounded-full bg-white/10"></div>
+          <div className="absolute -bottom-16 left-1/4 w-56 h-56 rounded-full bg-white/10"></div>
+        </div>
+
+        {/* Logo */}
+        <div className="relative">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-xl">
+              F
+            </div>
+            <span className="text-white font-bold text-xl">Fees Portal</span>
+          </div>
+          <p className="text-primary-100 text-sm">Management System</p>
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative space-y-6">
+          <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight">
+            Manage your<br />fees smarter.
+          </h1>
+          <p className="text-primary-100 text-base leading-relaxed">
+            Track payments, manage members, and generate reports — all in one place.
           </p>
+
+          {/* Feature pills */}
+          <div className="flex flex-wrap gap-2 pt-2">
+            {['Fee Tracking', 'PDF Reports', 'Area Management', 'Member Directory'].map(f => (
+              <span key={f} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white text-xs font-medium backdrop-blur-sm border border-white/20">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                {f}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="relative grid grid-cols-3 gap-4">
+          {[
+            { label: 'Areas', value: '∞' },
+            { label: 'Members', value: '∞' },
+            { label: 'Reports', value: 'PDF' },
+          ].map(s => (
+            <div key={s.label} className="text-center p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
+              <div className="text-2xl font-bold text-white">{s.value}</div>
+              <div className="text-xs text-primary-100 mt-0.5">{s.label}</div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Right side - Login Form */}
-      <div className="flex-1 flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 bg-slate-900 z-10 shadow-[-20px_0_40px_-10px_rgba(0,0,0,0.5)]">
-        <div className="w-full max-w-sm mx-auto">
-          <div className="lg:hidden mb-8 text-center">
-             <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-brand-400 to-indigo-600 text-white grid place-items-center font-bold text-3xl mx-auto mb-4">F</div>
-             <h2 className="text-3xl font-bold">Fees Portal</h2>
+      {/* Right Panel — Login Form */}
+      <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-10">
+        <div className="w-full max-w-sm">
+
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex flex-col items-center mb-8">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-primary-500/30 mb-3">
+              F
+            </div>
+            <h2 className="text-xl font-bold text-surface-900">Fees Portal</h2>
+            <p className="text-sm text-surface-500">Management System</p>
           </div>
-          
-          <h2 className="text-3xl font-bold mb-2">Welcome Back</h2>
-          <p className="text-slate-400 mb-8">Please enter your credentials to access your account.</p>
+
+          <h2 className="text-2xl font-bold text-surface-900">Welcome back 👋</h2>
+          <p className="text-surface-500 text-sm mt-1 mb-8">Sign in to your account to continue.</p>
 
           <form onSubmit={submit} className="space-y-5">
+            {/* Username */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Username</label>
-              <input 
-                className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all text-slate-100 placeholder-slate-500" 
-                placeholder="admin"
-                value={form.username} 
-                onChange={e => setForm({...form, username: e.target.value})} 
-                required 
-              />
+              <label className="label">Username</label>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <input
+                  className="input pl-10"
+                  placeholder="Enter your username"
+                  value={form.username}
+                  onChange={e => setForm({...form, username: e.target.value})}
+                  required
+                />
+              </div>
             </div>
+
+            {/* Password */}
             <div>
               <div className="flex justify-between mb-1.5">
-                <label className="block text-sm font-medium text-slate-300">Password</label>
-                <a href="#" className="text-sm text-brand-400 hover:text-brand-300 transition-colors">Forgot password?</a>
+                <label className="label mb-0">Password</label>
               </div>
               <div className="relative">
-                <input 
-                  className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all text-slate-100 placeholder-slate-500 pr-12" 
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="••••••••"
-                  value={form.password} 
-                  onChange={e => setForm({...form, password: e.target.value})} 
-                  required 
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <input
+                  className="input pl-10 pr-12"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={form.password}
+                  onChange={e => setForm({...form, password: e.target.value})}
+                  required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white focus:outline-none"
-                  title={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 transition-colors"
                 >
                   {showPassword ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                   )}
                 </button>
               </div>
             </div>
 
-            <button 
-              disabled={loading} 
-              className="w-full py-3 px-4 rounded-xl font-medium text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 focus:ring-4 focus:ring-brand-500/30 transition-all shadow-lg shadow-brand-600/20 disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full py-3 text-base font-semibold mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {loading ? 'Authenticating...' : 'Sign In'}
+              {loading ? (
+                <>
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                  Signing in...
+                </>
+              ) : 'Sign In'}
             </button>
-            <p className="mt-4 text-center text-sm text-slate-400 bg-slate-800/50 p-2 rounded-lg border border-slate-700/50">
-              Demo Credentials: <span className="font-bold text-white px-1">admin</span> / <span className="font-bold text-white px-1">admin123</span>
-            </p>
           </form>
 
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-700/50"></div>
+          {/* Demo credentials hint */}
+          <div className="mt-6 p-4 rounded-xl bg-surface-50 border border-surface-200">
+            <p className="text-xs text-surface-500 font-medium mb-1">Demo Credentials</p>
+            <div className="flex gap-4">
+              <div>
+                <span className="text-xs text-surface-400">Username: </span>
+                <span className="text-xs font-bold text-surface-700">admin</span>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-3 bg-slate-900 text-slate-500">Or continue without account</span>
+              <div>
+                <span className="text-xs text-surface-400">Password: </span>
+                <span className="text-xs font-bold text-surface-700">admin123</span>
               </div>
             </div>
-            
-            <button 
-              onClick={loginAsGuest}
-              type="button"
-              className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-slate-300 bg-slate-800 border border-slate-700 hover:bg-slate-700 hover:text-white transition-all shadow-sm group"
-            >
-              <svg className="text-slate-400 group-hover:text-slate-300" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              Continue as Guest
-            </button>
           </div>
         </div>
       </div>

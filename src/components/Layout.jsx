@@ -1,92 +1,147 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+
+const NAV_ITEMS = [
+  { to: '/', label: 'Dashboard', icon: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+  )},
+  { to: '/areas', label: 'Areas', icon: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+    </svg>
+  )},
+  { to: '/members', label: 'Members', icon: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+    </svg>
+  )},
+  { to: '/reports', label: 'Reports', icon: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    </svg>
+  )},
+];
 
 export default function Layout() {
   const { username, logout } = useAuth();
   const nav = useNavigate();
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = () => { logout(); nav('/login'); };
-
-  const links = [
-    { to: '/', label: 'Dashboard' },
-    { to: '/areas', label: 'Areas' },
-    { to: '/members', label: 'Members' },
-    { to: '/reports', label: 'Reports' },
-  ];
+  const initials = username ? username.slice(0, 2).toUpperCase() : 'AD';
 
   return (
-    <div className="min-h-full flex flex-col font-sans">
-      {/* Background visual to match login screen */}
-      <div className="fixed inset-0 z-[-1] pointer-events-none opacity-20 mix-blend-screen overflow-hidden">
-        <img src="/login-bg.png" alt="bg" className="w-full h-full object-cover blur-sm" />
-      </div>
+    <div className="min-h-full flex bg-surface-100 font-sans">
 
-      <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50 shadow-lg' : 'bg-transparent py-2'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-indigo-600 text-white grid place-items-center font-bold shadow-lg shadow-brand-500/30 group-hover:shadow-brand-500/50 transition-all duration-300 transform group-hover:-translate-y-0.5">
-              F
+      {/* ── Sidebar ── */}
+      {/* Mobile Overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setMobileOpen(false)} />
+      )}
+
+      <aside className={`fixed top-0 left-0 h-full z-50 flex flex-col bg-white shadow-sidebar transition-transform duration-300 sidebar-width
+        ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+        
+        {/* Logo */}
+        <div className="flex items-center gap-3 px-6 py-5 border-b border-surface-100">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-lg shadow-sm shadow-primary-500/30">
+            F
+          </div>
+          <div>
+            <div className="font-bold text-surface-900 text-base leading-none">Fees Portal</div>
+            <div className="text-xs text-surface-400 mt-0.5">Management System</div>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="px-4 pt-4 pb-2">
+          <div className="relative">
+            <svg className="w-4 h-4 text-surface-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              className="w-full pl-9 pr-4 py-2 text-sm bg-surface-100 border-0 rounded-xl text-surface-700 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-white transition-all"
+              placeholder="Search..."
+              readOnly
+            />
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
+          {NAV_ITEMS.map(item => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              onClick={() => setMobileOpen(false)}
+              className={({ isActive }) =>
+                `nav-link ${isActive ? 'nav-link-active' : ''}`
+              }
+            >
+              {item.icon}
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* User + Logout */}
+        <div className="px-3 py-4 border-t border-surface-100 space-y-1">
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-surface-50 mb-2">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+              {initials}
             </div>
-            <span className="text-2xl font-bold text-gradient tracking-tight">Fees Portal</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-2">
-            {links.map(l => (
-              <NavLink key={l.to} to={l.to} end
-                className={({isActive}) => `relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${isActive ? 'text-white bg-slate-800 border border-slate-700/50 shadow-sm' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}>
-                {l.label}
-              </NavLink>
-            ))}
-            <div className="h-6 w-px bg-slate-700 mx-2"></div>
-            <div className="flex items-center gap-3 ml-2 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 pl-4 pr-1.5 py-1.5 rounded-full shadow-sm">
-              <span className="text-sm font-medium text-slate-300">Hi, <span className="text-white font-bold">{username}</span></span>
-              <button onClick={handleLogout} className="bg-gradient-to-r from-rose-600 to-red-500 hover:from-rose-500 hover:to-red-400 text-white text-xs font-bold px-4 py-2 rounded-full transition-all shadow-lg shadow-rose-500/20 hover:shadow-rose-500/40">Logout</button>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold text-surface-800 truncate">{username}</div>
+              <div className="text-xs text-surface-400">Administrator</div>
             </div>
-          </nav>
-          <button className="md:hidden p-2 text-slate-300" onClick={() => setOpen(o => !o)}>
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={open ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} /></svg>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="nav-link w-full text-red-500 hover:bg-red-50 hover:text-red-600"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Log out
           </button>
         </div>
-        
-        {/* Mobile menu */}
-        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${open ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'}`}>
-          <div className="bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 px-4 py-3 space-y-2 shadow-2xl">
-            {links.map(l => (
-              <NavLink key={l.to} to={l.to} end onClick={() => setOpen(false)}
-                className={({isActive}) => `block px-4 py-3 rounded-xl text-sm font-semibold transition-all ${isActive ? 'bg-slate-800 text-white border border-slate-700' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`}>
-                {l.label}
-              </NavLink>
-            ))}
-            <div className="h-px bg-slate-800 my-2"></div>
-            <div className="flex items-center justify-between px-4 py-2">
-              <span className="text-sm font-medium text-slate-300">{username}</span>
-              <button onClick={handleLogout} className="text-rose-400 font-bold text-sm hover:text-rose-300">Logout</button>
+      </aside>
+
+      {/* ── Main Content Area ── */}
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-[240px]">
+
+        {/* Top Bar (mobile) */}
+        <header className="sticky top-0 z-30 bg-white border-b border-surface-100 shadow-sm lg:hidden">
+          <div className="flex items-center justify-between px-4 py-3">
+            <button onClick={() => setMobileOpen(true)} className="p-2 rounded-xl hover:bg-surface-100 text-surface-600">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm">F</div>
+              <span className="font-bold text-surface-900 text-sm">Fees Portal</span>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xs font-bold">
+              {initials}
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 animate-fade-in relative z-10">
-        <Outlet />
-      </main>
+        {/* Page Content */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 animate-fade-in">
+          <Outlet />
+        </main>
 
-      <footer className="mt-auto border-t border-slate-800/50 bg-slate-900/50 backdrop-blur-md relative z-10">
-        <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-3 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-400 to-indigo-600 text-white grid place-items-center text-sm font-bold shadow-md shadow-brand-500/20">F</div>
-            <span className="font-semibold text-slate-200">Fees Portal</span>
-          </div>
-          <p className="text-sm text-slate-500 font-medium">© 2026 Management System. All rights reserved.</p>
-        </div>
-      </footer>
+        {/* Footer */}
+        <footer className="px-6 py-4 border-t border-surface-100 bg-white">
+          <p className="text-xs text-surface-400 text-center">© 2026 Fees Portal Management System. All rights reserved.</p>
+        </footer>
+      </div>
     </div>
   );
 }
