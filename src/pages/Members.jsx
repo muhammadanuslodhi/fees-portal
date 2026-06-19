@@ -114,8 +114,12 @@ export default function Members() {
                 <div className="flex items-center justify-between">
                   <span className="badge-purple">{m.areaId?.areaName || '—'}</span>
                   <div className="flex gap-2">
-                    <button className="btn-secondary text-xs !py-1.5 !px-3 text-primary-600" onClick={()=>openEdit(m)}>Edit</button>
-                    <button className="btn-secondary text-xs !py-1.5 !px-3 text-red-500" onClick={()=>remove(m.id)}>Delete</button>
+                    <button title="Edit Member" className="btn-secondary !p-2 text-primary-600" onClick={()=>openEdit(m)}>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    </button>
+                    <button title="Delete Member" className="btn-secondary !p-2 text-red-500" onClick={()=>remove(m.id)}>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -152,8 +156,12 @@ export default function Members() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="btn-secondary text-xs !py-1.5 !px-3 text-primary-600" onClick={()=>openEdit(m)}>Edit</button>
-                        <button className="btn-secondary text-xs !py-1.5 !px-3 text-red-500" onClick={()=>remove(m.id)}>Delete</button>
+                        <button title="Edit Member" className="btn-secondary !p-2 text-primary-600" onClick={()=>openEdit(m)}>
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        </button>
+                        <button title="Delete Member" className="btn-secondary !p-2 text-red-500" onClick={()=>remove(m.id)}>
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
                       </div>
                     </td>
                   </tr>
