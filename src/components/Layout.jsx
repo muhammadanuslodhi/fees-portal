@@ -47,9 +47,17 @@ export default function Layout() {
   const { username, logout } = useAuth();
   const nav = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = () => { logout(); nav('/login'); };
   const initials = username ? username.slice(0, 2).toUpperCase() : 'AD';
+
+  const filteredNavItems = NAV_ITEMS.filter(item =>
+    item.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const filteredIslamicNav = ISLAMIC_NAV.filter(item =>
+    item.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-full flex bg-surface-100 font-sans">
@@ -81,17 +89,30 @@ export default function Layout() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
-              className="w-full pl-9 pr-4 py-2 text-sm bg-surface-100 border-0 rounded-xl text-surface-700 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-white transition-all"
+              type="text"
+              className="w-full pl-9 pr-8 py-2 text-sm bg-surface-100 border-0 rounded-xl text-surface-700 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-white transition-all"
               placeholder="Search..."
-              readOnly
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 p-1 rounded-full hover:bg-surface-200/50 transition-colors"
+                title="Clear search"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
 
         {/* Navigation */}
         <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
-        {/* Main nav */}
-          {NAV_ITEMS.map(item => (
+          {/* Main nav */}
+          {filteredNavItems.map(item => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -107,22 +128,32 @@ export default function Layout() {
           ))}
 
           {/* Islamic Contributions Section */}
-          <div className="pt-3 pb-1">
-            <p className="px-3 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Contributions</p>
-          </div>
-          {ISLAMIC_NAV.map(item => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              onClick={() => setMobileOpen(false)}
-              className={({ isActive }) =>
-                `nav-link ${isActive ? 'nav-link-active' : ''}`
-              }
-            >
-              {item.icon}
-              {item.label}
-            </NavLink>
-          ))}
+          {filteredIslamicNav.length > 0 && (
+            <>
+              <div className="pt-3 pb-1">
+                <p className="px-3 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Contributions</p>
+              </div>
+              {filteredIslamicNav.map(item => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setMobileOpen(false)}
+                  className={({ isActive }) =>
+                    `nav-link ${isActive ? 'nav-link-active' : ''}`
+                  }
+                >
+                  {item.icon}
+                  {item.label}
+                </NavLink>
+              ))}
+            </>
+          )}
+
+          {filteredNavItems.length === 0 && filteredIslamicNav.length === 0 && (
+            <div className="px-3 py-4 text-xs text-surface-400 text-center italic">
+              No matching pages found
+            </div>
+          )}
         </nav>
 
         {/* User + Logout */}
