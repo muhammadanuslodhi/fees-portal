@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { useAuth } from './context/AuthContext.jsx';
 import Layout from './components/Layout.jsx';
 import Login from './pages/Login.jsx';
@@ -15,16 +16,19 @@ function Protected({ children }) {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route element={<Protected><Layout /></Protected>}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/areas" element={<Areas />} />
-        <Route path="/members" element={<Members />} />
-        <Route path="/fees/:areaId" element={<FeePortal />} />
-        <Route path="/reports" element={<Reports />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route element={<Protected><Layout /></Protected>}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/areas" element={<Areas />} />
+          <Route path="/members" element={<Members />} />
+          <Route path="/fees/:areaId" element={<FeePortal />} />
+          <Route path="/reports" element={<Reports />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Analytics />
+    </>
   );
 }
