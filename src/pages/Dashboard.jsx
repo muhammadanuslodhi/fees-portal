@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
@@ -26,12 +26,50 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const nav = useNavigate();
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState({ areas: [], members: [] });
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
   useEffect(() => { (async () => {
     try {
       const [a, s] = await Promise.all([api.get('/areas'), api.get('/reports/dashboard')]);
       setAreas(a.data); setStats(s.data);
     } finally { setLoading(false); }
   })(); }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults({ areas: [], members: [] });
+      setSearchLoading(false);
+      return;
+    }
+
+    setSearchLoading(true);
+    const delayDebounce = setTimeout(async () => {
+      try {
+        const { data } = await api.get('/reports/search', { params: { q: searchQuery } });
+        setSearchResults(data);
+      } catch (err) {
+        console.error('Search error:', err);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-32 gap-3">
@@ -44,11 +82,134 @@ export default function Dashboard() {
     <div className="space-y-6 animate-slide-up">
 
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="page-title">Dashboard</h1>
           <p className="page-subtitle">Welcome back! Here's what's happening.</p>
         </div>
+
+        {/* Global Search Bar */}
+        <div ref={dropdownRef} className="flex-1 max-w-md w-full relative z-40">
+          <div className="relative">
+            <svg className="w-5 h-5 text-surface-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              className="w-full pl-10 pr-10 py-2.5 bg-white border border-surface-200 rounded-xl text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all shadow-sm"
+              placeholder="Search areas or members..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowDropdown(true);
+              }}
+              onFocus={() => setShowDropdown(true)}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSearchResults({ areas: [], members: [] });
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 p-1 rounded-full hover:bg-surface-100 transition-colors"
+                title="Clear search"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+
+          {/* Suggestions Dropdown */}
+          {showDropdown && searchQuery.trim() && (
+            <div className="absolute left-0 right-0 mt-2 bg-white border border-surface-200 rounded-xl shadow-lg z-50 overflow-hidden divide-y divide-surface-100 max-h-80 overflow-y-auto animate-scale-in">
+              {searchLoading ? (
+                <div className="flex items-center justify-center py-6 gap-2 text-surface-500 text-sm font-medium">
+                  <div className="w-4 h-4 rounded-full border-2 border-surface-200 border-t-primary-500 animate-spin"></div>
+                  Searching...
+                </div>
+              ) : (
+                <>
+                  {/* Areas Section */}
+                  {searchResults.areas.length > 0 && (
+                    <div className="p-2">
+                      <div className="px-3 py-1 text-[10px] font-bold text-surface-400 uppercase tracking-wider">
+                        Areas
+                      </div>
+                      <div className="space-y-0.5 mt-1">
+                        {searchResults.areas.map((area) => (
+                          <button
+                            key={area.id}
+                            onClick={() => {
+                              setShowDropdown(false);
+                              nav(`/fees/${area.id}`);
+                            }}
+                            className="w-full text-left px-3 py-2 rounded-lg hover:bg-surface-50 flex items-center justify-between transition-colors cursor-pointer"
+                          >
+                            <div>
+                              <div className="text-sm font-semibold text-surface-800">{area.areaName}</div>
+                              <div className="text-xs text-surface-400">Chairman: {area.chairmanName}</div>
+                            </div>
+                            <span className="badge-blue text-[10px] px-2 py-0.5">Area</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Members Section */}
+                  {searchResults.members.length > 0 && (
+                    <div className="p-2">
+                      <div className="px-3 py-1 text-[10px] font-bold text-surface-400 uppercase tracking-wider">
+                        Members
+                      </div>
+                      <div className="space-y-0.5 mt-1">
+                        {searchResults.members.map((member) => (
+                          <button
+                            key={member.id}
+                            onClick={() => {
+                              setShowDropdown(false);
+                              nav(`/fees/${member.areaId?.id}?q=${member.memberId}`);
+                            }}
+                            className="w-full text-left px-3 py-2 rounded-lg hover:bg-surface-50 flex items-center justify-between transition-colors cursor-pointer"
+                          >
+                            <div>
+                              <div className="text-sm font-semibold text-surface-800">
+                                {member.memberName}
+                              </div>
+                              <div className="text-xs text-surface-400 flex items-center gap-1.5 mt-0.5">
+                                <code className="bg-surface-100 border border-surface-200 px-1 py-0.2 rounded font-bold text-[10px] text-surface-600">
+                                  {member.memberId}
+                                </code>
+                                <span>·</span>
+                                <span>S/o {member.fatherName}</span>
+                                <span>·</span>
+                                <span className="text-surface-500 font-medium">{member.areaId?.areaName}</span>
+                              </div>
+                            </div>
+                            <span className="badge-purple text-[10px] px-2 py-0.5">Member</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Empty State */}
+                  {searchResults.areas.length === 0 && searchResults.members.length === 0 && (
+                    <div className="p-6 text-center text-surface-400 text-sm">
+                      <svg className="w-8 h-8 mx-auto mb-2 text-surface-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      No areas or members found for "{searchQuery}"
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
         <div className="flex gap-2">
           <Link to="/areas" className="btn-secondary text-sm">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>

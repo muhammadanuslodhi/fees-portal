@@ -5,5 +5,6 @@ const c = require('../controllers/reportController');
 router.use(auth);
 router.get('/dashboard', c.dashboard);
 router.get('/area/:areaId', c.areaReport);
+router.get('/search', c.search);
 
 module.exports = router;

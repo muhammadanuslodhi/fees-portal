@@ -67,3 +67,45 @@ exports.dashboard = async (_req, res) => {
   
   res.json({ totalAreas, totalMembers, totalCollected, totalPending, latest: mappedFees });
 };
+
+exports.search = async (req, res) => {
+  const { q } = req.query;
+  if (!q) return res.json({ areas: [], members: [] });
+
+  try {
+    const [areas, members] = await Promise.all([
+      prisma.area.findMany({
+        where: {
+          OR: [
+            { areaName: { contains: q, mode: 'insensitive' } },
+            { chairmanName: { contains: q, mode: 'insensitive' } }
+          ]
+        },
+        take: 5
+      }),
+      prisma.member.findMany({
+        where: {
+          OR: [
+            { memberName: { contains: q, mode: 'insensitive' } },
+            { memberId: { contains: q, mode: 'insensitive' } },
+            { fatherName: { contains: q, mode: 'insensitive' } }
+          ]
+        },
+        include: { area: true },
+        take: 10
+      })
+    ]);
+
+    // Format members areaId similar to other endpoints if needed
+    const mappedMembers = members.map(m => ({
+      ...m,
+      areaId: m.area
+    }));
+
+    res.json({ areas, members: mappedMembers });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Search failed' });
+  }
+};
+

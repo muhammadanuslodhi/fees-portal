@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -22,11 +22,13 @@ function PaidBadge({ paid }) {
 
 export default function FeePortal() {
   const { areaId } = useParams();
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get('q') || '';
   const [year, setYear] = useState(new Date().getFullYear());
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(initialSearch);
   const [showAdd, setShowAdd] = useState(false);
   const [newMember, setNewMember] = useState({ memberName:'', fatherName:'' });
 
@@ -41,6 +43,7 @@ export default function FeePortal() {
     setReport(data); setLoading(false);
   };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [areaId, year]);
+  useEffect(() => { setSearch(initialSearch); }, [initialSearch]);
 
   const openUpdate = (row) => {
     const fee = row.fee || { memberId: row.member.id, year };
