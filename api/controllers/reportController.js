@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../prisma');
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function mapFeeToMongooseFormat(doc) {
