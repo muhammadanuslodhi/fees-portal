@@ -40,9 +40,9 @@ export default function Login() {
         <div className="relative">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-xl">
-              F
+              ک
             </div>
-            <span className="text-white font-bold text-xl">Fees Portal</span>
+            <span className="text-white font-bold text-xl">کتیانہ ملک انجمن</span>
           </div>
           <p className="text-primary-100 text-sm">Management System</p>
         </div>
@@ -89,9 +89,9 @@ export default function Login() {
           {/* Mobile Logo */}
           <div className="lg:hidden flex flex-col items-center mb-8">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-primary-500/30 mb-3">
-              F
+              ک
             </div>
-            <h2 className="text-xl font-bold text-surface-900">Fees Portal</h2>
+            <h2 className="text-xl font-bold text-surface-900">کتیانہ ملک انجمن</h2>
             <p className="text-sm text-surface-500">Management System</p>
           </div>
 

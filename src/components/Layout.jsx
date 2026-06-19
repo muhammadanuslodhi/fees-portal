@@ -74,10 +74,10 @@ export default function Layout() {
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-5 border-b border-surface-100">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-lg shadow-sm shadow-primary-500/30">
-            F
+            ک
           </div>
           <div>
-            <div className="font-bold text-surface-900 text-base leading-none">Fees Portal</div>
+            <div className="font-bold text-surface-900 text-base leading-none">کتیانہ ملک انجمن</div>
             <div className="text-xs text-surface-400 mt-0.5">Management System</div>
           </div>
         </div>
@@ -191,8 +191,8 @@ export default function Layout() {
               </svg>
             </button>
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm">F</div>
-              <span className="font-bold text-surface-900 text-sm">Fees Portal</span>
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm">ک</div>
+              <span className="font-bold text-surface-900 text-sm">کتیانہ ملک انجمن</span>
             </div>
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xs font-bold">
               {initials}
@@ -207,7 +207,7 @@ export default function Layout() {
 
         {/* Footer */}
         <footer className="px-6 py-4 border-t border-surface-100 bg-white">
-          <p className="text-xs text-surface-400 text-center">© 2026 Fees Portal Management System. All rights reserved.</p>
+          <p className="text-xs text-surface-400 text-center">© 2026 کتیانہ ملک انجمن۔ جملہ حقوق محفوظ ہیں۔</p>
         </footer>
       </div>
     </div>

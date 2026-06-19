@@ -73,7 +73,7 @@ export default function FeePortal() {
   const exportPDF = () => {
     if (!report) return;
     const doc = new jsPDF({ orientation: 'landscape' });
-    doc.setFontSize(18); doc.text('Fees Portal', 14, 15);
+    doc.setFontSize(18); doc.text('Kutiyana Malik Anjuman', 14, 15);
     doc.setFontSize(12); doc.text(`Area: ${report.area.areaName}`, 14, 23);
     doc.text(`Year: ${year}`, 14, 29);
     doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 35);
@@ -88,7 +88,7 @@ export default function FeePortal() {
     doc.text(`Total Members: ${report.summary.totalMembers}`, 14, finalY);
     doc.text(`Total Collected: Rs ${report.summary.totalCollected}`, 80, finalY);
     doc.setFontSize(9);
-    doc.text('Fees Portal Management System © 2026', 14, doc.internal.pageSize.height - 8);
+    doc.text('Kutiyana Malik Anjuman © 2026', 14, doc.internal.pageSize.height - 8);
     doc.save(`${report.area.areaName}-${year}.pdf`);
   };
 

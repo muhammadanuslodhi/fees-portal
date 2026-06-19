@@ -17,7 +17,7 @@ app.use('/api/zakat', require('./routes/zakatRoutes'));
 app.use('/api/fitra', require('./routes/fitraRoutes'));
 app.use('/api/atiya', require('./routes/atiyaRoutes'));
 
-app.get('/', (_, res) => res.json({ ok: true, name: 'Fees Portal API' }));
+app.get('/', (_, res) => res.json({ ok: true, name: 'Kutiyana Malik Anjuman API' }));
 
 app.use((err, _req, res, _next) => {
   console.error(err);
