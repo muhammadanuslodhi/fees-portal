@@ -60,40 +60,43 @@ export default function Members() {
     <div className="space-y-6 animate-slide-up relative z-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tight drop-shadow-md">Members Directory</h1>
-          <p className="text-slate-400 mt-1">Manage society residents and their details.</p>
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight drop-shadow-md">Members Directory</h1>
+          <p className="text-slate-400 mt-1 text-sm sm:text-base">Manage society residents and their details.</p>
         </div>
-        <button className="btn-primary shadow-brand-500/30 font-bold tracking-wide" onClick={openNew}>
+        <button className="btn-primary shadow-brand-500/30 font-bold tracking-wide w-full sm:w-auto" onClick={openNew}>
           <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
           Add New Member
         </button>
       </div>
 
-      <div className="card p-6 bg-slate-800/80 border border-slate-700/50 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl"></div>
-        <div className="flex flex-col md:flex-row gap-5 items-end relative z-10">
-          <div className="w-full md:w-1/4">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Filter by Area</label>
-            <select className="input cursor-pointer" value={filter.areaId} onChange={e=>setFilter({...filter,areaId:e.target.value})}>
-              <option value="">All Areas</option>
-              {areas.map(a => <option key={a.id} value={a.id}>{a.areaName}</option>)}
-            </select>
-          </div>
-          <div className="w-full md:w-1/3">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Search Name</label>
-            <div className="relative">
-              <input className="input pl-11" placeholder="e.g. Ali Khan" value={filter.q} onChange={e=>setFilter({...filter,q:e.target.value})}/>
-              <svg className="w-5 h-5 text-slate-500 absolute left-4 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+      {/* Filter Card */}
+      <div className="card p-4 sm:p-6 bg-slate-800/80 border border-slate-700/50 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="flex flex-col gap-4 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Filter by Area</label>
+              <select className="input cursor-pointer" value={filter.areaId} onChange={e=>setFilter({...filter,areaId:e.target.value})}>
+                <option value="">All Areas</option>
+                {areas.map(a => <option key={a.id} value={a.id}>{a.areaName}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Search Name</label>
+              <div className="relative">
+                <input className="input pl-11" placeholder="e.g. Ali Khan" value={filter.q} onChange={e=>setFilter({...filter,q:e.target.value})}/>
+                <svg className="w-5 h-5 text-slate-500 absolute left-4 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Search Member ID</label>
+              <div className="relative">
+                <input className="input pl-11" placeholder="e.g. M00001" value={filter.memberId} onChange={e=>setFilter({...filter,memberId:e.target.value})}/>
+                <svg className="w-5 h-5 text-slate-500 absolute left-4 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z" /></svg>
+              </div>
             </div>
           </div>
-          <div className="w-full md:w-1/3">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Search Member ID</label>
-            <div className="relative">
-              <input className="input pl-11" placeholder="e.g. M00001" value={filter.memberId} onChange={e=>setFilter({...filter,memberId:e.target.value})}/>
-              <svg className="w-5 h-5 text-slate-500 absolute left-4 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z" /></svg>
-            </div>
-          </div>
-          <button className="btn-secondary h-[50px] px-8 font-bold" onClick={load}>Filter</button>
+          <button className="btn-secondary w-full sm:w-auto sm:self-end px-8 font-bold" onClick={load}>Search</button>
         </div>
       </div>
 
@@ -105,7 +108,43 @@ export default function Members() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            {/* Mobile: Card layout */}
+            <div className="sm:hidden divide-y divide-slate-700/50">
+              {paged.map(m => (
+                <div key={m.id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="font-bold text-white text-sm">{m.memberName}</div>
+                      <div className="text-slate-400 text-xs mt-0.5">S/o {m.fatherName}</div>
+                    </div>
+                    <span className="font-mono text-xs font-bold px-2 py-1 bg-slate-900/80 rounded-lg text-slate-300 border border-slate-700">
+                      {m.memberId}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center px-2 py-1 rounded-xl text-xs font-bold bg-brand-500/10 text-brand-400 border border-brand-500/20">
+                      {m.areaId?.areaName || '-'}
+                    </span>
+                    <div className="flex gap-2">
+                      <button className="btn-secondary !py-1.5 !px-3 text-xs font-bold text-brand-400 border-brand-500/30 hover:bg-brand-500/10" onClick={()=>openEdit(m)}>Edit</button>
+                      <button className="btn-secondary !py-1.5 !px-3 text-xs font-bold text-rose-400 border-rose-500/30 hover:bg-rose-500/10" onClick={()=>remove(m.id)}>Delete</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {!paged.length && (
+                <div className="p-12 text-center text-slate-500">
+                  <div className="p-4 bg-slate-800 inline-block rounded-full mb-4 shadow-inner border border-slate-700">
+                    <svg className="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                  </div>
+                  <p className="text-lg font-bold text-slate-300">No members found</p>
+                  <p className="mt-1 text-sm">Adjust your filters or add a new member.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Desktop: Table layout */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-sm text-left border-collapse">
                 <thead className="bg-slate-900/80 text-slate-400 font-bold uppercase tracking-wider text-xs">
                   <tr>
@@ -136,12 +175,8 @@ export default function Members() {
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          <button className="btn-secondary !py-2 !px-4 text-xs font-bold shadow-md text-brand-400 border-brand-500/30 hover:bg-brand-500/10" onClick={()=>openEdit(m)}>
-                            Edit
-                          </button>
-                          <button className="btn-secondary !py-2 !px-4 text-xs font-bold shadow-md text-rose-400 border-rose-500/30 hover:bg-rose-500/10" onClick={()=>remove(m.id)}>
-                            Delete
-                          </button>
+                          <button className="btn-secondary !py-2 !px-4 text-xs font-bold shadow-md text-brand-400 border-brand-500/30 hover:bg-brand-500/10" onClick={()=>openEdit(m)}>Edit</button>
+                          <button className="btn-secondary !py-2 !px-4 text-xs font-bold shadow-md text-rose-400 border-rose-500/30 hover:bg-rose-500/10" onClick={()=>remove(m.id)}>Delete</button>
                         </div>
                       </td>
                     </tr>
@@ -162,7 +197,7 @@ export default function Members() {
             </div>
 
             {members.length > 0 && (
-              <div className="flex flex-col sm:flex-row justify-between items-center p-5 border-t border-slate-700/50 bg-slate-900/30 gap-4">
+              <div className="flex flex-col sm:flex-row justify-between items-center p-4 sm:p-5 border-t border-slate-700/50 bg-slate-900/30 gap-3">
                 <span className="text-sm text-slate-400 font-medium">
                   Showing <span className="text-white font-bold">{Math.min((page-1)*pageSize + 1, members.length)}</span> to <span className="text-white font-bold">{Math.min(page*pageSize, members.length)}</span> of <span className="text-white font-bold">{members.length}</span> members
                 </span>
@@ -180,13 +215,13 @@ export default function Members() {
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md grid place-items-center z-50 p-4 animate-fade-in">
           <form onSubmit={save} className="card w-full max-w-md animate-slide-up shadow-[0_0_50px_rgba(0,0,0,0.5)] border-slate-600 bg-slate-800 space-y-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-extrabold text-white">{editing ? 'Edit Member' : 'Add New Member'}</h2>
+              <h2 className="text-xl sm:text-2xl font-extrabold text-white">{editing ? 'Edit Member' : 'Add New Member'}</h2>
               <button type="button" className="text-slate-400 hover:text-white p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 transition-colors" onClick={() => setShow(false)}>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
             
-            <div className="space-y-5">
+            <div className="space-y-4">
               <div>
                 <label className="label">Full Name</label>
                 <input className="input" placeholder="e.g. Ali Khan" value={form.memberName} onChange={e=>setForm({...form,memberName:e.target.value})} required/>
@@ -210,8 +245,8 @@ export default function Members() {
             </div>
 
             <div className="flex justify-end gap-3 pt-4 border-t border-slate-700/50">
-              <button type="button" className="btn-secondary py-3 px-6" onClick={()=>setShow(false)}>Cancel</button>
-              <button className="btn-primary py-3 px-8 font-bold">Save</button>
+              <button type="button" className="btn-secondary py-3 px-5 flex-1 sm:flex-none" onClick={()=>setShow(false)}>Cancel</button>
+              <button className="btn-primary py-3 px-8 font-bold flex-1 sm:flex-none">Save</button>
             </div>
           </form>
         </div>
