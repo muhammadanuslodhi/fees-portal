@@ -90,11 +90,30 @@ export default function Layout() {
 
         {/* Navigation */}
         <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
+        {/* Main nav */}
           {NAV_ITEMS.map(item => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.to === '/'}
+              onClick={() => setMobileOpen(false)}
+              className={({ isActive }) =>
+                `nav-link ${isActive ? 'nav-link-active' : ''}`
+              }
+            >
+              {item.icon}
+              {item.label}
+            </NavLink>
+          ))}
+
+          {/* Islamic Contributions Section */}
+          <div className="pt-3 pb-1">
+            <p className="px-3 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Contributions</p>
+          </div>
+          {ISLAMIC_NAV.map(item => (
+            <NavLink
+              key={item.to}
+              to={item.to}
               onClick={() => setMobileOpen(false)}
               className={({ isActive }) =>
                 `nav-link ${isActive ? 'nav-link-active' : ''}`
