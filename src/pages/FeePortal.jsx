@@ -82,7 +82,7 @@ export default function FeePortal() {
       const cells = MONTHS.map(m => (r.fee?.[m]?.paid ? '✓' : '✗'));
       return [i+1, r.member.memberId, r.member.memberName, r.member.fatherName||'', ...cells, r.fee?.totalAmount||0];
     });
-    autoTable(doc, { head, body, startY: 42, styles:{fontSize:7}, headStyles:{fillColor:[20,184,166]} });
+    autoTable(doc, { head, body, startY: 42, styles:{fontSize:9}, headStyles:{fillColor:[20,184,166]} });
     const finalY = doc.lastAutoTable.finalY + 8;
     doc.setFontSize(11);
     doc.text(`Total Members: ${report.summary.totalMembers}`, 14, finalY);
