@@ -39,9 +39,7 @@ export default function Login() {
         {/* Logo */}
         <div className="relative">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-xl">
-              ک
-            </div>
+            <img src="/logo.png" className="w-11 h-11 object-contain bg-white rounded-xl p-0.5" alt="Logo" />
             <span className="text-white font-bold text-xl">کتیانہ ملک انجمن</span>
           </div>
           <p className="text-primary-100 text-sm">Management System</p>
@@ -88,9 +86,7 @@ export default function Login() {
 
           {/* Mobile Logo */}
           <div className="lg:hidden flex flex-col items-center mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-primary-500/30 mb-3">
-              ک
-            </div>
+            <img src="/logo.png" className="w-16 h-16 object-contain mb-3" alt="Logo" />
             <h2 className="text-xl font-bold text-surface-900">کتیانہ ملک انجمن</h2>
             <p className="text-sm text-surface-500">Management System</p>
           </div>
