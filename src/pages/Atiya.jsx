@@ -19,6 +19,7 @@ export default function Atiya() {
   const [editing, setEditing] = useState(null);
   const [filter, setFilter] = useState({ areaId: '', year: CURRENT_YEAR, q: '' });
   const [form, setForm] = useState({ memberId: '', year: CURRENT_YEAR, amount: 0, purpose: '', paid: false, notes: '' });
+  const [memberSearch, setMemberSearch] = useState('');
 
   const years = useMemo(() => Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - i), []);
 
@@ -43,13 +44,15 @@ export default function Atiya() {
 
   const openNew = () => {
     setEditing(null);
-    setForm({ memberId: members[0]?.id || '', year: filter.year, amount: 0, purpose: '', paid: false, notes: '' });
+    setForm({ memberId: '', year: filter.year, amount: 0, purpose: '', paid: false, notes: '' });
+    setMemberSearch('');
     setShow(true);
   };
 
   const openEdit = (row) => {
     setEditing(row);
     setForm({ memberId: row.memberId, year: row.year, amount: row.amount, purpose: row.purpose, paid: row.paid, notes: row.notes });
+    setMemberSearch(row.member?.memberName ? `${row.member.memberName} (${row.member.memberId})` : '');
     setShow(true);
   };
 
@@ -238,12 +241,54 @@ export default function Atiya() {
               </button>
             </div>
 
-            <div>
+            <div className="relative">
               <label className="label">Member</label>
-              <select className="input" value={form.memberId} onChange={e => setForm({ ...form, memberId: e.target.value })} required>
-                <option value="" disabled>Select member...</option>
-                {members.map(m => <option key={m.id} value={m.id}>{m.memberName}</option>)}
-              </select>
+              <input
+                type="text"
+                className="input"
+                placeholder="Type to search member by name or ID..."
+                value={memberSearch}
+                onChange={e => {
+                  setMemberSearch(e.target.value);
+                  setForm({ ...form, memberId: '' });
+                }}
+                required
+              />
+              {!form.memberId && memberSearch.trim() && (
+                <div className="absolute left-0 right-0 mt-1 bg-white border border-surface-200 rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto divide-y divide-surface-100">
+                  {members
+                    .filter(m =>
+                      m.memberName.toLowerCase().includes(memberSearch.toLowerCase()) ||
+                      m.memberId.toLowerCase().includes(memberSearch.toLowerCase())
+                    )
+                    .slice(0, 10)
+                    .map(m => (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => {
+                          setForm({ ...form, memberId: m.id });
+                          setMemberSearch(`${m.memberName} (${m.memberId})`);
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-surface-50 flex items-center justify-between cursor-pointer"
+                      >
+                        <div>
+                          <span className="font-medium text-surface-800">{m.memberName}</span>
+                          <span className="text-xs text-surface-400 ml-2">S/o {m.fatherName}</span>
+                        </div>
+                        <span className="text-xs font-semibold bg-surface-100 px-1.5 py-0.5 rounded text-surface-600">
+                          {m.memberId}
+                        </span>
+                      </button>
+                    ))}
+                  {members.filter(m =>
+                    m.memberName.toLowerCase().includes(memberSearch.toLowerCase()) ||
+                    m.memberId.toLowerCase().includes(memberSearch.toLowerCase())
+                  ).length === 0 && (
+                    <div className="px-3 py-2 text-xs text-surface-400 italic">No members found</div>
+                  )}
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
