@@ -33,9 +33,6 @@ model Member {
   areaId     String
   area       Area        @relation(fields: [areaId], references: [id], onDelete: Cascade)
   fees       FeeRecord[]
-  zakats     Zakat[]
-  fitras     Fitra[]
-  atiyas     Atiya[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 }
@@ -82,8 +79,7 @@ model FeeRecord {
 
 model Zakat {
   id        String   @id @default(cuid())
-  memberId  String
-  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  name      String
   year      Int
   amount    Float    @default(0)
   paid      Boolean  @default(false)
@@ -91,13 +87,12 @@ model Zakat {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([memberId, year])
+  @@unique([name, year])
 }
 
 model Fitra {
   id              String   @id @default(cuid())
-  memberId        String
-  member          Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  name            String
   year            Int
   persons         Int      @default(1)
   amountPerPerson Float    @default(0)
@@ -107,13 +102,12 @@ model Fitra {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  @@unique([memberId, year])
+  @@unique([name, year])
 }
 
 model Atiya {
   id        String   @id @default(cuid())
-  memberId  String
-  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  name      String
   year      Int
   amount    Float    @default(0)
   purpose   String   @default("")
@@ -122,6 +116,6 @@ model Atiya {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([memberId, year])
+  @@unique([name, year])
 }
 
