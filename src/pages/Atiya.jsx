@@ -58,12 +58,41 @@ export default function Atiya() {
 
   const save = async (e) => {
     e.preventDefault();
+
+    let finalMemberId = form.memberId;
+    if (!finalMemberId && memberSearch.trim()) {
+      const trimmed = memberSearch.trim().toLowerCase();
+      // Exact match
+      let matched = members.find(m => m.memberName.toLowerCase() === trimmed || m.memberId.toLowerCase() === trimmed);
+      // Unique partial match if no exact match
+      if (!matched) {
+        const matches = members.filter(m => m.memberName.toLowerCase().includes(trimmed) || m.memberId.toLowerCase().includes(trimmed));
+        if (matches.length === 1) {
+          matched = matches[0];
+        }
+      }
+
+      if (matched) {
+        finalMemberId = matched.id;
+      } else {
+        toast.error('Member not found. Please select from the suggestions or enter a valid member name.');
+        return;
+      }
+    }
+
+    if (!finalMemberId) {
+      toast.error('Please enter a valid member.');
+      return;
+    }
+
+    const payload = { ...form, memberId: finalMemberId };
+
     try {
       if (editing) {
-        await api.put(`/atiya/${editing.id}`, form);
+        await api.put(`/atiya/${editing.id}`, payload);
         toast.success('Record updated!');
       } else {
-        await api.post('/atiya', form);
+        await api.post('/atiya', payload);
         toast.success('Atiya record saved!');
       }
       setShow(false); load();
