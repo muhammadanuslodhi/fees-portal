@@ -95,7 +95,7 @@ export default function Login() {
             <p className="text-sm text-surface-500">Management System</p>
           </div>
 
-          <h2 className="text-2xl font-bold text-surface-900">Welcome back 👋</h2>
+          <h2 className="text-2xl font-bold text-surface-900">Welcome Back</h2>
           <p className="text-surface-500 text-sm mt-1 mb-8">Sign in to your account to continue.</p>
 
           <form onSubmit={submit} className="space-y-5">
@@ -168,20 +168,7 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Demo credentials hint */}
-          <div className="mt-6 p-4 rounded-xl bg-surface-50 border border-surface-200">
-            <p className="text-xs text-surface-500 font-medium mb-1">Demo Credentials</p>
-            <div className="flex gap-4">
-              <div>
-                <span className="text-xs text-surface-400">Username: </span>
-                <span className="text-xs font-bold text-surface-700">admin</span>
-              </div>
-              <div>
-                <span className="text-xs text-surface-400">Password: </span>
-                <span className="text-xs font-bold text-surface-700">admin123</span>
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
