@@ -13,6 +13,9 @@ app.use('/api/areas', require('./routes/areaRoutes'));
 app.use('/api/members', require('./routes/memberRoutes'));
 app.use('/api/fees', require('./routes/feeRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
+app.use('/api/zakat', require('./routes/zakatRoutes'));
+app.use('/api/fitra', require('./routes/fitraRoutes'));
+app.use('/api/atiya', require('./routes/atiyaRoutes'));
 
 app.get('/', (_, res) => res.json({ ok: true, name: 'Fees Portal API' }));
 
