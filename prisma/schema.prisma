@@ -79,7 +79,7 @@ model FeeRecord {
 
 model Zakat {
   id        String   @id @default(cuid())
-  name      String
+  name      String   @default("")
   year      Int
   amount    Float    @default(0)
   paid      Boolean  @default(false)
@@ -92,7 +92,7 @@ model Zakat {
 
 model Fitra {
   id              String   @id @default(cuid())
-  name            String
+  name            String   @default("")
   year            Int
   persons         Int      @default(1)
   amountPerPerson Float    @default(0)
@@ -107,7 +107,7 @@ model Fitra {
 
 model Atiya {
   id        String   @id @default(cuid())
-  name      String
+  name      String   @default("")
   year      Int
   amount    Float    @default(0)
   purpose   String   @default("")
