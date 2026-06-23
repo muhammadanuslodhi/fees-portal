@@ -79,14 +79,42 @@ export default function FeePortal() {
     doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 35);
     const head = [['#','ID','Name','Father',...SHORT,'Total']];
     const body = report.rows.map((r,i) => {
-      const cells = MONTHS.map(m => (r.fee?.[m]?.paid ? '✓' : '✗'));
+      const cells = MONTHS.map(m => (r.fee?.[m]?.paid ? 'Y' : 'N'));
       return [i+1, r.member.memberId, r.member.memberName, r.member.fatherName||'', ...cells, r.fee?.totalAmount||0];
     });
-    autoTable(doc, { head, body, startY: 42, styles:{fontSize:9}, headStyles:{fillColor:[20,184,166]} });
+    autoTable(doc, {
+      head,
+      body,
+      startY: 42,
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [20, 184, 166] },
+      willDrawCell: (data) => {
+        if (data.section === 'body' && data.column.index >= 4 && data.column.index <= 15) {
+          data.cell.text = ''; // Clear text representation
+        }
+      },
+      didDrawCell: (data) => {
+        if (data.section === 'body' && data.column.index >= 4 && data.column.index <= 15) {
+          const isPaid = data.cell.raw === 'Y';
+          const xc = data.cell.x + data.cell.width / 2;
+          const yc = data.cell.y + data.cell.height / 2;
+          if (isPaid) {
+            doc.setDrawColor(16, 185, 129); // Emerald-600
+            doc.setLineWidth(0.5);
+            doc.line(xc - 2, yc, xc - 0.5, yc + 1.8);
+            doc.line(xc - 0.5, yc + 1.8, xc + 2, yc - 1.8);
+          } else {
+            doc.setDrawColor(239, 68, 68); // Red-500
+            doc.setLineWidth(0.5);
+            doc.line(xc - 1.8, yc - 1.8, xc + 1.8, yc + 1.8);
+            doc.line(xc + 1.8, yc - 1.8, xc - 1.8, yc + 1.8);
+          }
+        }
+      }
+    });
     const finalY = doc.lastAutoTable.finalY + 8;
     doc.setFontSize(11);
     doc.text(`Total Members: ${report.summary.totalMembers}`, 14, finalY);
-    doc.text(`Total Collected: Rs ${report.summary.totalCollected}`, 80, finalY);
     doc.setFontSize(9);
     doc.text('Kutiyana Malik Anjuman © 2026', 14, doc.internal.pageSize.height - 8);
     doc.save(`${report.area.areaName}-${year}.pdf`);
