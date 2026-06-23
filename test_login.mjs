@@ -4,7 +4,7 @@ async function test() {
   try {
     const res = await axios.post('http://localhost:5000/api/auth/login', {
       username: 'admin',
-      password: 'admin123'
+      password: 'profit786@$%'
     });
     console.log("Success:", res.data);
   } catch (err) {

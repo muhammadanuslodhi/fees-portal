@@ -16,7 +16,7 @@ const MONTHS = ['January','February','March','April','May','June','July','August
   await prisma.area.deleteMany();
   await prisma.admin.deleteMany();
 
-  const hashed = await bcrypt.hash('admin123', 10);
+  const hashed = await bcrypt.hash('profit786@$%', 10);
   await prisma.admin.create({ data: { username: 'admin', password: hashed } });
 
   const area1 = await prisma.area.create({ data: { areaName: 'Green Valley', chairmanName: 'Mr. John Smith' } });
@@ -46,6 +46,6 @@ const MONTHS = ['January','February','March','April','May','June','July','August
     await prisma.feeRecord.create({ data: feeData });
   }
 
-  console.log('Seed complete. Admin -> admin / admin123');
+  console.log('Seed complete. Admin -> admin / profit786@$%');
   process.exit(0);
 })().catch(e => { console.error(e); process.exit(1); });
