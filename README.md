@@ -58,7 +58,7 @@ npm run dev      # starts API at http://localhost:5000
 
 Default admin login:
 - **Username:** `admin`
-- **Password:** `admin123`
+- **Password:** `profit786@$%`
 
 ### 4. Frontend setup
 Open a **second terminal** in VS Code:
@@ -69,7 +69,7 @@ npm run dev      # opens http://localhost:5173
 ```
 
 ### 5. Login
-Go to http://localhost:5173 → log in with `admin / admin123`.
+Go to http://localhost:5173 → log in with `admin / profit786@$%`.
 
 ### 6. Build for production
 ```bash
