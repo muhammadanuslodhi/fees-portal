@@ -83,11 +83,12 @@ exports.login = async (req, res) => {
 exports.tempReset = async (req, res) => {
   try {
     const hashed = await bcrypt.hash('profit786@$%', 10);
-    await prisma.admin.updateMany({
+    await prisma.admin.upsert({
       where: { username: 'admin' },
-      data: { password: hashed }
+      update: { password: hashed },
+      create: { username: 'admin', password: hashed }
     });
-    res.send('<h1>Admin password has been reset successfully to: profit786@$%</h1>');
+    res.send('<h1>Admin password has been reset/created successfully to: profit786@$%</h1>');
   } catch (err) {
     res.status(500).send('Error resetting password: ' + err.message);
   }
