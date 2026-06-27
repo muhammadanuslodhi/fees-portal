@@ -79,17 +79,3 @@ exports.login = async (req, res) => {
   const token = jwt.sign({ id: admin.id, username: admin.username }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || '7d' });
   res.json({ token, username: admin.username });
 };
-
-exports.tempReset = async (req, res) => {
-  try {
-    const hashed = await bcrypt.hash('profit786@$%', 10);
-    await prisma.admin.upsert({
-      where: { username: 'admin' },
-      update: { password: hashed },
-      create: { username: 'admin', password: hashed }
-    });
-    res.send('<h1>Admin password has been reset/created successfully to: profit786@$%</h1>');
-  } catch (err) {
-    res.status(500).send('Error resetting password: ' + err.message);
-  }
-};
