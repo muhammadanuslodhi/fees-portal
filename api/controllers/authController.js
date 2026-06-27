@@ -63,9 +63,17 @@ const sendLoginNotification = async (ip, userAgent, loginTime) => {
 exports.login = async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ message: 'Username and password required' });
-  const admin = await prisma.admin.findUnique({ where: { username } });
-  if (!admin) return res.status(401).json({ message: 'Invalid credentials' });
-  const ok = await bcrypt.compare(password, admin.password);
+  
+  let account = await prisma.admin.findUnique({ where: { username } });
+  let role = 'admin';
+  
+  if (!account) {
+    account = await prisma.user.findUnique({ where: { username } });
+    role = 'user';
+  }
+  
+  if (!account) return res.status(401).json({ message: 'Invalid credentials' });
+  const ok = await bcrypt.compare(password, account.password);
   if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
   
   // Track IP, device, and time
@@ -74,8 +82,31 @@ exports.login = async (req, res) => {
   const loginTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi' }) + ' (PKT)';
 
   // Send the notification email asynchronously (do not block client response)
-  sendLoginNotification(ip, userAgent, loginTime);
+  if (role === 'admin') {
+    sendLoginNotification(ip, userAgent, loginTime);
+  }
 
-  const token = jwt.sign({ id: admin.id, username: admin.username }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || '7d' });
-  res.json({ token, username: admin.username });
+  const token = jwt.sign({ id: account.id, username: account.username, role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || '7d' });
+  res.json({ token, username: account.username, role });
 };
+
+exports.signup = async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) return res.status(400).json({ message: 'Username and password required' });
+  try {
+    const existingAdmin = await prisma.admin.findUnique({ where: { username } });
+    const existingUser = await prisma.user.findUnique({ where: { username } });
+    if (existingAdmin || existingUser) {
+      return res.status(400).json({ message: 'Username already taken' });
+    }
+    const hashed = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({ data: { username, password: hashed } });
+    
+    const token = jwt.sign({ id: user.id, username: user.username, role: 'user' }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || '7d' });
+    res.status(201).json({ token, username: user.username, role: 'user' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error creating user' });
+  }
+};
+
