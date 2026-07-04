@@ -121,8 +121,13 @@ exports.signup = async (req, res) => {
     const token = jwt.sign({ id: user.id, username: user.username, role: 'user' }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || '7d' });
     res.status(201).json({ token, username: user.username, role: 'user' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error creating user' });
+    console.error('Signup error:', error);
+    // Provide specific error details in development
+    const isDev = process.env.NODE_ENV !== 'production';
+    const message = isDev && error?.message
+      ? `Error creating user: ${error.message}`
+      : 'Error creating user';
+    res.status(500).json({ message });
   }
 };
 
