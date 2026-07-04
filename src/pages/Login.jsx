@@ -8,6 +8,7 @@ export default function Login() {
   const [form, setForm] = useState({ username: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const { login } = useAuth();
   const nav = useNavigate();
 
@@ -15,12 +16,13 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/login', form);
-      login(data.token, data.username);
-      toast.success('Welcome back!');
+      const endpoint = isSignUp ? '/auth/signup' : '/auth/login';
+      const { data } = await api.post(endpoint, form);
+      login(data.token, data.username, data.role);
+      toast.success(isSignUp ? 'Account created successfully!' : 'Welcome back!');
       nav('/');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Invalid credentials');
+      toast.error(err.response?.data?.message || (isSignUp ? 'Failed to sign up' : 'Invalid credentials'));
     } finally { setLoading(false); }
   };
 
@@ -91,8 +93,10 @@ export default function Login() {
             <p className="text-sm text-surface-500">Management System</p>
           </div>
 
-          <h2 className="text-2xl font-bold text-surface-900">Welcome Back</h2>
-          <p className="text-surface-500 text-sm mt-1 mb-8">Sign in to your account to continue.</p>
+          <h2 className="text-2xl font-bold text-surface-900">{isSignUp ? 'Create an Account' : 'Welcome Back'}</h2>
+          <p className="text-surface-500 text-sm mt-1 mb-8">
+            {isSignUp ? 'Sign up for a new account to continue.' : 'Sign in to your account to continue.'}
+          </p>
 
           <form onSubmit={submit} className="space-y-5">
             {/* Username */}
@@ -158,11 +162,22 @@ export default function Login() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                   </svg>
-                  Signing in...
+                  {isSignUp ? 'Signing up...' : 'Signing in...'}
                 </>
-              ) : 'Sign In'}
+              ) : (isSignUp ? 'Sign Up' : 'Sign In')}
             </button>
           </form>
+
+          <div className="mt-6 text-center text-sm text-surface-500">
+            {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+            <button
+              type="button"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-primary-600 font-semibold hover:underline bg-transparent border-0 p-0 cursor-pointer"
+            >
+              {isSignUp ? 'Sign In' : 'Sign Up'}
+            </button>
+          </div>
 
 
         </div>

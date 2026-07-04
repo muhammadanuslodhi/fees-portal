@@ -44,7 +44,7 @@ const ISLAMIC_NAV = [
 ];
 
 export default function Layout() {
-  const { username, logout } = useAuth();
+  const { username, role, logout } = useAuth();
   const nav = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -162,7 +162,9 @@ export default function Layout() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold text-surface-800 truncate">{username}</div>
-              <div className="text-xs text-surface-400">Administrator</div>
+              <div className="text-xs text-surface-400">
+                {role === 'admin' ? 'Administrator' : 'Standard User'}
+              </div>
             </div>
           </div>
           <button

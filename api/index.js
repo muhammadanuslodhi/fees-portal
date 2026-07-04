@@ -24,5 +24,30 @@ app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ message: err.message || 'Server error' });
 });
 
+const prisma = require('./prisma');
+const bcrypt = require('bcryptjs');
+
+async function ensureDefaultAdmin() {
+  try {
+    const adminCount = await prisma.admin.count();
+    if (adminCount === 0) {
+      const defaultPassword = 'profit786@$%';
+      const hashed = await bcrypt.hash(defaultPassword, 10);
+      await prisma.admin.create({
+        data: {
+          username: 'admin',
+          password: hashed
+        }
+      });
+      console.log('Default admin user (admin / profit786@$%) created successfully!');
+    }
+  } catch (err) {
+    console.error('Error ensuring default admin user exists:', err);
+  }
+}
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
+app.listen(PORT, async () => {
+  console.log(`API running on http://localhost:${PORT}`);
+  await ensureDefaultAdmin();
+});
