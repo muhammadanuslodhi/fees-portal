@@ -5,7 +5,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Login() {
-  const [form, setForm] = useState({ username: '', password: '' });
+  const [form, setForm] = useState({ name: '', fatherName: '', email: '', username: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
@@ -99,6 +99,66 @@ export default function Login() {
           </p>
 
           <form onSubmit={submit} className="space-y-5">
+            {isSignUp && (
+              <>
+                {/* Full Name */}
+                <div>
+                  <label className="label">Full Name</label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <input
+                      className="input pl-10"
+                      placeholder="Enter your full name"
+                      value={form.name}
+                      onChange={e => setForm({...form, name: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                {/* Father's Name */}
+                <div>
+                  <label className="label">Father's Name</label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <input
+                      className="input pl-10"
+                      placeholder="Enter father's name"
+                      value={form.fatherName}
+                      onChange={e => setForm({...form, fatherName: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                {/* Email Address */}
+                <div>
+                  <label className="label">Email Address</label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="email"
+                      className="input pl-10"
+                      placeholder="Enter your email address"
+                      value={form.email}
+                      onChange={e => setForm({...form, email: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
             {/* Username */}
             <div>
               <label className="label">Username</label>

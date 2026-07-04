@@ -91,16 +91,32 @@ exports.login = async (req, res) => {
 };
 
 exports.signup = async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) return res.status(400).json({ message: 'Username and password required' });
+  const { name, fatherName, email, username, password } = req.body;
+  if (!username || !password || !email) {
+    return res.status(400).json({ message: 'Username, password, and email are required' });
+  }
   try {
     const existingAdmin = await prisma.admin.findUnique({ where: { username } });
     const existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingAdmin || existingUser) {
       return res.status(400).json({ message: 'Username already taken' });
     }
+
+    const existingEmail = await prisma.user.findUnique({ where: { email } });
+    if (existingEmail) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
+
     const hashed = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({ data: { username, password: hashed } });
+    const user = await prisma.user.create({
+      data: {
+        username,
+        password: hashed,
+        name: name || '',
+        fatherName: fatherName || '',
+        email: email
+      }
+    });
     
     const token = jwt.sign({ id: user.id, username: user.username, role: 'user' }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || '7d' });
     res.status(201).json({ token, username: user.username, role: 'user' });
