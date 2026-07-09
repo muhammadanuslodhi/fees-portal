@@ -22,23 +22,27 @@ export default function Login() {
       toast.success(isSignUp ? 'Account created successfully!' : 'Welcome back!');
       nav('/');
     } catch (err) {
+      // ---- DEBUG LOGGING: check browser console (F12) for exact cause ----
+      console.error('Auth request failed');
+      console.error('Status code:', err.response?.status);
+      console.error('Server message:', err.response?.data);
+      console.error('Full error:', err);
+      // ---------------------------------------------------------------------
       toast.error(err.response?.data?.message || (isSignUp ? 'Failed to sign up' : 'Invalid credentials'));
     } finally { setLoading(false); }
   };
 
   return (
     <div className="min-h-screen flex bg-surface-100 font-sans">
-      
+
       {/* Left Panel */}
       <div className="hidden lg:flex flex-col justify-between w-[420px] xl:w-[480px] bg-gradient-to-br from-primary-600 via-primary-500 to-primary-700 p-12 relative overflow-hidden shrink-0">
-        {/* Background decoration */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-white/10"></div>
           <div className="absolute top-1/3 -right-16 w-48 h-48 rounded-full bg-white/10"></div>
           <div className="absolute -bottom-16 left-1/4 w-56 h-56 rounded-full bg-white/10"></div>
         </div>
 
-        {/* Logo */}
         <div className="relative">
           <div className="flex items-center gap-3 mb-3">
             <img src="/logo.png" className="w-11 h-11 object-contain bg-white rounded-xl p-0.5" alt="Logo" />
@@ -47,7 +51,6 @@ export default function Login() {
           <p className="text-primary-100 text-sm">Management System</p>
         </div>
 
-        {/* Hero Content */}
         <div className="relative space-y-6">
           <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight">
             اپنی فیسوں کا انتظام<br />زیادہ سمجھداری سے کریں۔
@@ -56,7 +59,6 @@ export default function Login() {
             Track payments, manage members, and generate reports — all in one place.
           </p>
 
-          {/* Feature pills */}
           <div className="flex flex-wrap gap-2 pt-2">
             {['Fee Tracking', 'PDF Reports', 'Area Management', 'Member Directory'].map(f => (
               <span key={f} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white text-xs font-medium backdrop-blur-sm border border-white/20">
@@ -67,7 +69,6 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="relative grid grid-cols-3 gap-4">
           {[
             { label: 'Areas', value: '∞' },
@@ -86,7 +87,6 @@ export default function Login() {
       <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-sm">
 
-          {/* Mobile Logo */}
           <div className="lg:hidden flex flex-col items-center mb-8">
             <img src="/logo.png" className="w-16 h-16 object-contain mb-3" alt="Logo" />
             <h2 className="text-xl font-bold text-surface-900">کتیانہ ملک انجمن</h2>
@@ -101,7 +101,6 @@ export default function Login() {
           <form onSubmit={submit} className="space-y-5">
             {isSignUp && (
               <>
-                {/* Full Name */}
                 <div>
                   <label className="label">Full Name</label>
                   <div className="relative">
@@ -115,11 +114,11 @@ export default function Login() {
                       placeholder="Enter your full name"
                       value={form.name}
                       onChange={e => setForm({...form, name: e.target.value})}
+                      required
                     />
                   </div>
                 </div>
 
-                {/* Father's Name */}
                 <div>
                   <label className="label">Father's Name</label>
                   <div className="relative">
@@ -137,7 +136,6 @@ export default function Login() {
                   </div>
                 </div>
 
-                {/* Email Address */}
                 <div>
                   <label className="label">Email Address</label>
                   <div className="relative">
@@ -159,7 +157,6 @@ export default function Login() {
               </>
             )}
 
-            {/* Username */}
             <div>
               <label className="label">Username</label>
               <div className="relative">
@@ -178,7 +175,6 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <div className="flex justify-between mb-1.5">
                 <label className="label mb-0">Password</label>
@@ -196,6 +192,7 @@ export default function Login() {
                   value={form.password}
                   onChange={e => setForm({...form, password: e.target.value})}
                   required
+                  minLength={6}
                 />
                 <button
                   type="button"
@@ -238,7 +235,6 @@ export default function Login() {
               {isSignUp ? 'Sign In' : 'Sign Up'}
             </button>
           </div>
-
 
         </div>
       </div>
