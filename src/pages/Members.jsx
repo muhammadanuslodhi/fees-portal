@@ -12,6 +12,10 @@ export default function Members() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ memberName:'', fatherName:'', areaId:'' });
   const [loading, setLoading] = useState(true);
+  const [showProfile, setShowProfile] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [memberFees, setMemberFees] = useState([]);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -25,6 +29,22 @@ export default function Members() {
 
   const openNew = () => { setEditing(null); setForm({ memberName:'', fatherName:'', areaId: areas[0]?.id || '' }); setShow(true); };
   const openEdit = (m) => { setEditing(m); setForm({ memberName:m.memberName, fatherName:m.fatherName, areaId:m.areaId?.id||m.areaId }); setShow(true); };
+  const openProfile = async (m) => {
+    setSelectedMember(m);
+    setShowProfile(true);
+    loadMemberFees(m);
+  };
+  const loadMemberFees = async (m) => {
+    setProfileLoading(true);
+    try {
+      const { data } = await api.get('/fees', { params: { areaId: m.areaId?.id || m.areaId, memberId: m.memberId } });
+      setMemberFees(data);
+    } catch {
+      setMemberFees([]);
+    } finally {
+      setProfileLoading(false);
+    }
+  };
 
   const save = async (e) => {
     e.preventDefault();
@@ -112,16 +132,19 @@ export default function Members() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="badge-purple">{m.areaId?.areaName || '—'}</span>
-                  <div className="flex gap-2">
-                    <button title="Edit Member" className="btn-secondary !p-2 text-primary-600" onClick={()=>openEdit(m)}>
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                    </button>
-                    <button title="Delete Member" className="btn-secondary !p-2 text-red-500" onClick={()=>remove(m.id)}>
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                    </button>
+                    <span className="badge-purple">{m.areaId?.areaName || '—'}</span>
+                    <div className="flex gap-2">
+                      <button title="View Profile" className="btn-secondary !p-2 text-green-600" onClick={()=>openProfile(m)}>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                      </button>
+                      <button title="Edit Member" className="btn-secondary !p-2 text-primary-600" onClick={()=>openEdit(m)}>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                      </button>
+                      <button title="Delete Member" className="btn-secondary !p-2 text-red-500" onClick={()=>remove(m.id)}>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      </button>
+                    </div>
                   </div>
-                </div>
               </div>
             ))}
             {!paged.length && (
@@ -156,6 +179,9 @@ export default function Members() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button title="View Profile" className="btn-secondary !p-2 text-green-600" onClick={()=>openProfile(m)}>
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        </button>
                         <button title="Edit Member" className="btn-secondary !p-2 text-primary-600" onClick={()=>openEdit(m)}>
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </button>
@@ -233,6 +259,88 @@ export default function Members() {
               <button className="btn-primary flex-1">Save Member</button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Member Profile Modal */}
+      {showProfile && selectedMember && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm grid place-items-center z-50 p-4 animate-fade-in">
+          <div className="card w-full max-w-2xl max-h-[80vh] overflow-y-auto animate-scale-in shadow-modal space-y-6">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-bold text-surface-900">Member Profile</h2>
+              <button type="button" className="btn-ghost p-2 rounded-lg" onClick={() => setShowProfile(false)}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+
+            {/* Member Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-surface-50 rounded-xl border border-surface-200">
+              <div>
+                <div className="text-xs text-surface-500 mb-1">Member ID</div>
+                <code className="text-sm font-bold bg-white border border-surface-200 px-2 py-1 rounded-lg text-surface-700">{selectedMember.memberId}</code>
+              </div>
+              <div>
+                <div className="text-xs text-surface-500 mb-1">Full Name</div>
+                <div className="font-semibold text-surface-900">{selectedMember.memberName}</div>
+              </div>
+              <div>
+                <div className="text-xs text-surface-500 mb-1">Father's Name</div>
+                <div className="text-surface-700">{selectedMember.fatherName}</div>
+              </div>
+              <div>
+                <div className="text-xs text-surface-500 mb-1">Area</div>
+                <span className="badge-purple">{selectedMember.areaId?.areaName || '—'}</span>
+              </div>
+            </div>
+
+            {/* Fee Records */}
+            <div>
+              <h3 className="font-semibold text-surface-900 mb-3">Fee Records</h3>
+              {profileLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-6 h-6 rounded-full border-3 border-surface-200 border-t-primary-500 animate-spin"></div>
+                </div>
+              ) : memberFees.length > 0 ? (
+                <div className="space-y-3">
+                  {memberFees.map(fee => (
+                    <div key={fee.id} className="p-4 border border-surface-200 rounded-xl bg-white">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="font-semibold text-surface-900">Year {fee.year}</span>
+                        <span className={`text-xs font-bold px-2 py-1 rounded-full ${fee.pendingAmount > 0 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                          {fee.pendingAmount > 0 ? `${fee.pendingAmount} Pending` : 'Fully Paid'}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                        {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(month => {
+                          const monthLower = month.toLowerCase();
+                          const paid = fee[`${monthLower}Paid`];
+                          const amount = fee[`${monthLower}Amount`];
+                          return (
+                            <div key={month} className={`p-2 rounded-lg border ${paid ? 'border-green-200 bg-green-50' : 'border-surface-200 bg-surface-50'}`}>
+                              <div className="font-medium text-surface-700">{month}</div>
+                              <div className={`text-xs ${paid ? 'text-green-700' : 'text-surface-500'}`}>
+                                {paid ? `Paid: ${amount}` : 'Not Paid'}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-surface-100 flex gap-4 text-sm">
+                        <div><span className="text-surface-500">Total Amount:</span> <span className="font-semibold text-surface-900">{fee.totalAmount}</span></div>
+                        <div><span className="text-surface-500">Pending:</span> <span className={`font-semibold ${fee.pendingAmount > 0 ? 'text-red-600' : 'text-green-600'}`}>{fee.pendingAmount}</span></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-surface-500 text-sm">No fee records found for this member.</div>
+              )}
+            </div>
+
+            <div className="pt-2">
+              <button className="btn-secondary w-full" onClick={() => setShowProfile(false)}>Close</button>
+            </div>
+          </div>
         </div>
       )}
     </div>
