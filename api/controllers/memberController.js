@@ -33,6 +33,7 @@ exports.get = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
+    console.log('Create member request body:', req.body);
     // Validate required fields
     if (!req.body.memberName || !req.body.fatherName || !req.body.cnic || !req.body.areaId) {
       return res.status(400).json({ message: 'Full Name, Father Name, CNIC, and Area are required' });
@@ -62,16 +63,22 @@ exports.create = async (req, res) => {
     });
     res.status(201).json(m);
   } catch (error) {
-    console.error(error);
+    console.error('Error creating member:', error);
     if (error.code === 'P2002') { // Unique constraint failed
       return res.status(400).json({ message: 'CNIC already exists' });
     }
-    res.status(500).json({ message: 'Error creating member' });
+    // Return detailed error in development
+    res.status(500).json({ 
+      message: 'Error creating member', 
+      error: error.message,
+      code: error.code
+    });
   }
 };
 
 exports.update = async (req, res) => {
   try {
+    console.log('Update member request body:', req.body);
     // Check if CNIC is being updated, and if it's unique
     if (req.body.cnic) {
       const existingCNIC = await prisma.member.findFirst({
@@ -99,11 +106,15 @@ exports.update = async (req, res) => {
     });
     res.json(m);
   } catch (error) {
-    console.error(error);
+    console.error('Error updating member:', error);
     if (error.code === 'P2002') { // Unique constraint failed
       return res.status(400).json({ message: 'CNIC already exists' });
     }
-    res.status(500).json({ message: 'Error updating member' });
+    res.status(500).json({ 
+      message: 'Error updating member', 
+      error: error.message,
+      code: error.code
+    });
   }
 };
 
