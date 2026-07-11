@@ -5,3 +5,7 @@ uploads/*
 !uploads/.gitkeep
 
 /src/generated/prisma
+
+# Local SQLite dev database
+prisma/dev.db
+prisma/dev.db-journal

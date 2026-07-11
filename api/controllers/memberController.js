@@ -33,53 +33,71 @@ exports.get = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    console.log('Create member request body:', req.body);
     // Validate required fields
-    if (!req.body.memberName || !req.body.fatherName || !req.body.cnic || !req.body.areaId) {
-      return res.status(400).json({ message: 'Full Name, Father Name, CNIC, and Area are required' });
+    if (!req.body.memberName || !req.body.fatherName || !req.body.areaId) {
+      return res.status(400).json({ message: 'Full Name, Father Name, and Area are required' });
     }
     
-    // Check if CNIC already exists
-    const existingCNIC = await prisma.member.findUnique({ where: { cnic: req.body.cnic } });
-    if (existingCNIC) {
-      return res.status(400).json({ message: 'CNIC already exists' });
+    // Check if CNIC already exists (only if cnic provided)
+    if (req.body.cnic) {
+      const existingCNIC = await prisma.member.findUnique({ where: { cnic: req.body.cnic } });
+      if (existingCNIC) {
+        return res.status(400).json({ message: 'A member with this CNIC already exists' });
+      }
+    }
+
+    // Verify area exists
+    const area = await prisma.area.findUnique({ where: { id: req.body.areaId } });
+    if (!area) {
+      return res.status(400).json({ message: 'Selected area not found. Please select a valid area.' });
     }
     
-    // Auto generate memberId logic
-    const count = await prisma.member.count();
-    const nextId = 'M' + String(count + 1).padStart(5, '0');
+    // Auto generate memberId — find max and increment to avoid collision after deletions
+    const lastMember = await prisma.member.findFirst({ orderBy: { createdAt: 'desc' } });
+    let nextNum = 1;
+    if (lastMember && lastMember.memberId) {
+      const match = lastMember.memberId.match(/(\d+)$/);
+      if (match) nextNum = parseInt(match[1]) + 1;
+    }
+    const nextId = 'M' + String(nextNum).padStart(5, '0');
     
     const m = await prisma.member.create({
       data: {
         memberName: req.body.memberName,
         fatherName: req.body.fatherName,
-        cnic: req.body.cnic,
+        cnic: req.body.cnic || null,
         dateOfBirth: req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : null,
-        phoneNo: req.body.phoneNo,
-        address: req.body.address,
+        phoneNo: req.body.phoneNo || null,
+        address: req.body.address || null,
         areaId: req.body.areaId,
         memberId: nextId
-      }
+      },
+      include: { area: true }
     });
-    res.status(201).json(m);
+    res.status(201).json({ ...m, areaId: m.area });
   } catch (error) {
-    console.error('Error creating member:', error);
-    if (error.code === 'P2002') { // Unique constraint failed
-      return res.status(400).json({ message: 'CNIC already exists' });
+    console.error('Create member error:', error);
+    if (error.code === 'P2002') {
+      const field = error.meta?.target?.includes('cnic') ? 'CNIC' : 'Member ID';
+      return res.status(400).json({ message: `${field} already exists. Please use a different value.` });
     }
-    // Return detailed error in development
-    res.status(500).json({ 
-      message: 'Error creating member', 
-      error: error.message,
-      code: error.code
-    });
+    if (error.code === 'P2003' || error.code === 'P2025') {
+      return res.status(400).json({ message: 'Selected area does not exist. Please refresh and try again.' });
+    }
+    if (error.name === 'PrismaClientInitializationError' || error.name === 'PrismaClientKnownRequestError') {
+      return res.status(503).json({ message: 'Database connection failed. Please check server configuration.' });
+    }
+    res.status(500).json({ message: error.message || 'Failed to create member. Please try again.' });
   }
 };
 
 exports.update = async (req, res) => {
   try {
-    console.log('Update member request body:', req.body);
-    // Check if CNIC is being updated, and if it's unique
+    if (!req.body.memberName || !req.body.fatherName || !req.body.areaId) {
+      return res.status(400).json({ message: 'Full Name, Father Name, and Area are required' });
+    }
+
+    // Check CNIC uniqueness if provided
     if (req.body.cnic) {
       const existingCNIC = await prisma.member.findFirst({
         where: {
@@ -88,7 +106,7 @@ exports.update = async (req, res) => {
         }
       });
       if (existingCNIC) {
-        return res.status(400).json({ message: 'CNIC already exists' });
+        return res.status(400).json({ message: 'A member with this CNIC already exists' });
       }
     }
     
@@ -97,24 +115,24 @@ exports.update = async (req, res) => {
       data: {
         memberName: req.body.memberName,
         fatherName: req.body.fatherName,
-        cnic: req.body.cnic,
+        cnic: req.body.cnic || null,
         dateOfBirth: req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : null,
-        phoneNo: req.body.phoneNo,
-        address: req.body.address,
+        phoneNo: req.body.phoneNo || null,
+        address: req.body.address || null,
         areaId: req.body.areaId
-      }
+      },
+      include: { area: true }
     });
-    res.json(m);
+    res.json({ ...m, areaId: m.area });
   } catch (error) {
-    console.error('Error updating member:', error);
-    if (error.code === 'P2002') { // Unique constraint failed
-      return res.status(400).json({ message: 'CNIC already exists' });
+    console.error('Update member error:', error);
+    if (error.code === 'P2002') {
+      return res.status(400).json({ message: 'CNIC already exists. Please use a different value.' });
     }
-    res.status(500).json({ 
-      message: 'Error updating member', 
-      error: error.message,
-      code: error.code
-    });
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: 'Member not found.' });
+    }
+    res.status(500).json({ message: error.message || 'Failed to update member. Please try again.' });
   }
 };
 
