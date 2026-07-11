@@ -30,7 +30,7 @@ model Member {
   memberId      String      @unique
   memberName    String
   fatherName    String
-  cnic          String      @unique
+  cnic          String?      @unique
   dateOfBirth   DateTime?
   phoneNo       String?
   address       String?

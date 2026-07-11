@@ -33,6 +33,11 @@ exports.get = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
+    // Validate required fields
+    if (!req.body.memberName || !req.body.fatherName || !req.body.cnic || !req.body.areaId) {
+      return res.status(400).json({ message: 'Full Name, Father Name, CNIC, and Area are required' });
+    }
+    
     // Check if CNIC already exists
     const existingCNIC = await prisma.member.findUnique({ where: { cnic: req.body.cnic } });
     if (existingCNIC) {

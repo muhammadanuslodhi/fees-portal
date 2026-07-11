@@ -84,7 +84,9 @@ export default function Members() {
       if (editing) await api.put(`/members/${editing.id}`, form);
       else await api.post('/members', form);
       toast.success(editing ? 'Member updated' : 'Member added!'); setShow(false); load();
-    } catch { toast.error('Save failed'); }
+    } catch (err) { 
+      toast.error(err.response?.data?.message || 'Save failed'); 
+    }
   };
 
   const remove = async (id) => {
