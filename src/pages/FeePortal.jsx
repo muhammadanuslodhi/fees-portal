@@ -87,7 +87,7 @@ export default function FeePortal() {
       body,
       startY: 42,
       styles: { fontSize: 9 },
-      headStyles: { fillColor: [20, 184, 166] },
+      headStyles: { fillColor: [5, 150, 105] },
       willDrawCell: (data) => {
         if (data.section === 'body' && data.column.index >= 4 && data.column.index <= 15) {
           data.cell.text = ''; // Clear text representation

@@ -1,6 +1,6 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: (
@@ -48,6 +48,12 @@ export default function Layout() {
   const nav = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [theme, setTheme] = useState(() => localStorage.getItem('app-theme') || 'emerald-light');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('app-theme', theme);
+  }, [theme]);
 
   const handleLogout = () => { logout(); nav('/login'); };
   const initials = username ? username.slice(0, 2).toUpperCase() : 'AD';
@@ -60,23 +66,23 @@ export default function Layout() {
   );
 
   return (
-    <div className="min-h-full flex bg-surface-100 font-sans">
+    <div className="min-h-full flex bg-surface-100 font-sans transition-colors duration-300">
 
       {/* ── Sidebar ── */}
       {/* Mobile Overlay */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setMobileOpen(false)} />
+        <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden" onClick={() => setMobileOpen(false)} />
       )}
 
-      <aside className={`fixed top-0 left-0 h-full z-50 flex flex-col bg-white shadow-sidebar transition-transform duration-300 sidebar-width
+      <aside className={`fixed top-0 left-0 h-full z-50 flex flex-col bg-surface-0 border-r border-surface-200/50 shadow-sidebar transition-transform duration-300 sidebar-width
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
         
         {/* Logo */}
-        <div className="flex items-center gap-3 px-6 py-5 border-b border-surface-100">
-          <img src="/logo.png" className="w-9 h-9 object-contain" alt="Logo" />
+        <div className="flex items-center gap-3 px-6 py-5 border-b border-surface-200/50">
+          <img src="/logo.png" className="w-10 h-10 object-contain bg-white rounded-xl p-0.5 shadow-sm" alt="Logo" />
           <div>
-            <div className="font-bold text-surface-900 text-base leading-none">کتیانہ ملک انجمن</div>
-            <div className="text-xs text-surface-400 mt-0.5">Management System</div>
+            <div className="font-extrabold text-surface-900 text-base leading-none urdu-text">کتیانہ ملک انجمن</div>
+            <div className="text-[10px] font-bold text-surface-400 uppercase tracking-widest mt-1">Portal System</div>
           </div>
         </div>
 
@@ -88,8 +94,8 @@ export default function Layout() {
             </svg>
             <input
               type="text"
-              className="w-full pl-9 pr-8 py-2 text-sm bg-surface-100 border-0 rounded-xl text-surface-700 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-white transition-all"
-              placeholder="Search..."
+              className="w-full pl-9 pr-8 py-2 text-xs bg-surface-50 border border-surface-200 rounded-xl text-surface-700 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-surface-0 transition-all duration-300"
+              placeholder="Search page..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -128,8 +134,8 @@ export default function Layout() {
           {/* Islamic Contributions Section */}
           {filteredIslamicNav.length > 0 && (
             <>
-              <div className="pt-3 pb-1">
-                <p className="px-3 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Contributions</p>
+              <div className="pt-4 pb-1">
+                <p className="px-4 text-[9px] font-bold text-surface-400 uppercase tracking-widest">Contributions</p>
               </div>
               {filteredIslamicNav.map(item => (
                 <NavLink
@@ -154,25 +160,84 @@ export default function Layout() {
           )}
         </nav>
 
+        {/* Theme switcher */}
+        <div className="px-4 py-3.5 border-t border-surface-200/50 bg-surface-50/50">
+          <div className="text-[10px] font-extrabold text-surface-400 uppercase tracking-widest mb-2 px-1">Appearance</div>
+          <div className="grid grid-cols-2 gap-1.5">
+            <button
+              onClick={() => setTheme('emerald-light')}
+              className={`flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
+                theme === 'emerald-light'
+                  ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/20'
+                  : 'bg-surface-0 text-surface-600 border-surface-200/60 hover:bg-surface-100 hover:text-surface-800'
+              }`}
+              title="Emerald Light"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${theme === 'emerald-light' ? 'bg-white' : 'bg-emerald-500'}`}></span>
+              Emerald
+            </button>
+            <button
+              onClick={() => setTheme('indigo-light')}
+              className={`flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
+                theme === 'indigo-light'
+                  ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/20'
+                  : 'bg-surface-0 text-surface-600 border-surface-200/60 hover:bg-surface-100 hover:text-surface-800'
+              }`}
+              title="Indigo Light"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${theme === 'indigo-light' ? 'bg-white' : 'bg-indigo-500'}`}></span>
+              Indigo
+            </button>
+            <button
+              onClick={() => setTheme('emerald-dark')}
+              className={`flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
+                theme === 'emerald-dark'
+                  ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/20'
+                  : 'bg-surface-0 text-surface-600 border-surface-200/60 hover:bg-surface-100 hover:text-surface-800'
+              }`}
+              title="Emerald Dark"
+            >
+              <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+              Em. Dark
+            </button>
+            <button
+              onClick={() => setTheme('indigo-dark')}
+              className={`flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
+                theme === 'indigo-dark'
+                  ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/20'
+                  : 'bg-surface-0 text-surface-600 border-surface-200/60 hover:bg-surface-100 hover:text-surface-800'
+              }`}
+              title="Indigo Dark"
+            >
+              <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+              Ind. Dark
+            </button>
+          </div>
+        </div>
+
         {/* User + Logout */}
-        <div className="px-3 py-4 border-t border-surface-100 space-y-1">
-          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-surface-50 mb-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+        <div className="px-3 py-4 border-t border-surface-200/50 space-y-1">
+          <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-surface-50 border border-surface-200/40 mb-2">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-md shadow-primary-500/10">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold text-surface-800 truncate">{username}</div>
-              <div className="text-xs text-surface-400">
-                {role === 'admin' ? 'Administrator' : 'Standard User'}
+              <div className="text-xs font-bold text-surface-900 truncate">{username}</div>
+              <div className="text-[10px] text-surface-400 font-semibold uppercase tracking-wider">
+                {role === 'admin' ? 'Administrator' : 'Standard'}
               </div>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="nav-link w-full text-red-500 hover:bg-red-50 hover:text-red-600"
+            className="nav-link w-full text-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200/50 border border-transparent py-2.5"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            <svg className="w-5 h-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
             Log out
           </button>
@@ -180,34 +245,34 @@ export default function Layout() {
       </aside>
 
       {/* ── Main Content Area ── */}
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-[240px]">
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-[260px] transition-all duration-300">
 
         {/* Top Bar (mobile) */}
-        <header className="sticky top-0 z-30 bg-white border-b border-surface-100 shadow-sm lg:hidden">
+        <header className="sticky top-0 z-30 bg-surface-0 border-b border-surface-200/50 shadow-sm lg:hidden transition-colors duration-300">
           <div className="flex items-center justify-between px-4 py-3">
-            <button onClick={() => setMobileOpen(true)} className="p-2 rounded-xl hover:bg-surface-100 text-surface-600">
+            <button onClick={() => setMobileOpen(true)} className="p-2 rounded-xl hover:bg-surface-100 text-surface-600 transition-colors">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
             <div className="flex items-center gap-2">
-              <img src="/logo.png" className="w-7 h-7 object-contain" alt="Logo" />
-              <span className="font-bold text-surface-900 text-sm">کتیانہ ملک انجمن</span>
+              <img src="/logo.png" className="w-7 h-7 object-contain bg-white rounded-lg p-0.5" alt="Logo" />
+              <span className="font-extrabold text-surface-900 text-sm urdu-text">کتیانہ ملک انجمن</span>
             </div>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white text-xs font-bold shadow-md shadow-primary-500/10">
               {initials}
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 animate-fade-in">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 animate-fade-in bg-surface-100 transition-colors duration-300">
           <Outlet />
         </main>
 
         {/* Footer */}
-        <footer className="px-6 py-4 border-t border-surface-100 bg-white">
-          <p className="text-xs text-surface-400 text-center">© 2026 کتیانہ ملک انجمن۔ جملہ حقوق محفوظ ہیں۔</p>
+        <footer className="px-6 py-4 border-t border-surface-200/50 bg-surface-0 transition-colors duration-300">
+          <p className="text-[11px] font-semibold text-surface-400 text-center tracking-wider uppercase">© 2026 کتیانہ ملک انجمن۔ جملہ حقوق محفوظ ہیں۔</p>
         </footer>
       </div>
     </div>

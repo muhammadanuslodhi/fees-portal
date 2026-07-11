@@ -1,8 +1,152 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root, [data-theme="emerald-light"] {
+  /* Primary - Emerald Green */
+  --color-primary-50: 240 253 244;
+  --color-primary-100: 220 252 231;
+  --color-primary-200: 187 247 208;
+  --color-primary-300: 134 239 172;
+  --color-primary-400: 74 222 128;
+  --color-primary-500: 16 185 129;
+  --color-primary-600: 5 150 105;
+  --color-primary-700: 4 120 87;
+  --color-primary-800: 6 95 70;
+  --color-primary-900: 6 78 59;
+
+  /* Surface - Zinc Neutral */
+  --color-surface-0: 255 255 255;
+  --color-surface-50: 250 250 250;
+  --color-surface-100: 244 244 245;
+  --color-surface-200: 228 228 231;
+  --color-surface-300: 212 212 216;
+  --color-surface-400: 161 161 170;
+  --color-surface-500: 113 113 122;
+  --color-surface-600: 82 82 91;
+  --color-surface-700: 63 63 70;
+  --color-surface-800: 39 39 42;
+  --color-surface-900: 24 24 27;
+
+  /* Accent Colors */
+  --color-accent-orange: 249 115 22;
+  --color-accent-purple: 139 92 246;
+  --color-accent-pink: 236 72 153;
+  --color-accent-blue: 59 130 246;
+  --color-accent-yellow: 234 179 8;
+
+  --color-shadow-rgb: 9 9 11;
+}
+
+[data-theme="indigo-light"] {
+  /* Primary - Indigo */
+  --color-primary-50: 238 242 255;
+  --color-primary-100: 224 231 255;
+  --color-primary-200: 199 210 254;
+  --color-primary-300: 165 180 252;
+  --color-primary-400: 129 140 248;
+  --color-primary-500: 99 102 241;
+  --color-primary-600: 79 70 229;
+  --color-primary-700: 67 56 202;
+  --color-primary-800: 55 48 163;
+  --color-primary-900: 49 46 129;
+
+  /* Surface - Zinc Neutral */
+  --color-surface-0: 255 255 255;
+  --color-surface-50: 250 250 250;
+  --color-surface-100: 244 244 245;
+  --color-surface-200: 228 228 231;
+  --color-surface-300: 212 212 216;
+  --color-surface-400: 161 161 170;
+  --color-surface-500: 113 113 122;
+  --color-surface-600: 82 82 91;
+  --color-surface-700: 63 63 70;
+  --color-surface-800: 39 39 42;
+  --color-surface-900: 24 24 27;
+
+  /* Accent Colors */
+  --color-accent-orange: 249 115 22;
+  --color-accent-purple: 139 92 246;
+  --color-accent-pink: 236 72 153;
+  --color-accent-blue: 59 130 246;
+  --color-accent-yellow: 234 179 8;
+
+  --color-shadow-rgb: 9 9 11;
+}
+
+[data-theme="emerald-dark"] {
+  /* Inverted Emerald Green for Dark Mode */
+  --color-primary-50: 6 78 59;
+  --color-primary-100: 6 95 70;
+  --color-primary-200: 4 120 87;
+  --color-primary-300: 5 150 105;
+  --color-primary-400: 16 185 129;
+  --color-primary-500: 52 211 153;
+  --color-primary-600: 110 231 183;
+  --color-primary-700: 167 243 208;
+  --color-primary-800: 209 250 229;
+  --color-primary-900: 240 253 244;
+
+  /* Inverted Surfaces */
+  --color-surface-0: 24 32 49;     /* Deep slate card */
+  --color-surface-50: 30 41 59;    /* Slightly lighter surface */
+  --color-surface-100: 15 23 42;   /* Dark navy body background */
+  --color-surface-200: 51 65 85;   /* Dark borders */
+  --color-surface-300: 71 85 105;
+  --color-surface-400: 100 116 139;
+  --color-surface-500: 148 163 184;
+  --color-surface-600: 203 213 225;
+  --color-surface-700: 226 232 240;
+  --color-surface-800: 241 245 249; /* White text */
+  --color-surface-900: 248 250 252; /* Ultra bright text */
+
+  /* Dark mode accent colors */
+  --color-accent-orange: 251 146 60;
+  --color-accent-purple: 167 139 250;
+  --color-accent-pink: 244 114 182;
+  --color-accent-blue: 96 165 250;
+  --color-accent-yellow: 250 204 21;
+
+  --color-shadow-rgb: 0 0 0;
+}
+
+[data-theme="indigo-dark"] {
+  /* Inverted Indigo for Dark Mode */
+  --color-primary-50: 49 46 129;
+  --color-primary-100: 55 48 163;
+  --color-primary-200: 67 56 202;
+  --color-primary-300: 79 70 229;
+  --color-primary-400: 99 102 241;
+  --color-primary-500: 129 140 248;
+  --color-primary-600: 165 180 252;
+  --color-primary-700: 199 210 254;
+  --color-primary-800: 224 231 255;
+  --color-primary-900: 238 242 255;
+
+  /* Inverted Surfaces */
+  --color-surface-0: 24 32 49;
+  --color-surface-50: 30 41 59;
+  --color-surface-100: 15 23 42;
+  --color-surface-200: 51 65 85;
+  --color-surface-300: 71 85 105;
+  --color-surface-400: 100 116 139;
+  --color-surface-500: 148 163 184;
+  --color-surface-600: 203 213 225;
+  --color-surface-700: 226 232 240;
+  --color-surface-800: 241 245 249;
+  --color-surface-900: 248 250 252;
+
+  /* Accent Colors */
+  --color-accent-orange: 251 146 60;
+  --color-accent-purple: 167 139 250;
+  --color-accent-pink: 244 114 182;
+  --color-accent-blue: 96 165 250;
+  --color-accent-yellow: 250 204 21;
+
+  --color-shadow-rgb: 0 0 0;
+}
 
 @layer base {
   html, body, #root {
@@ -10,33 +154,33 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply font-sans text-surface-800 antialiased bg-surface-100;
+    @apply font-sans text-surface-800 antialiased bg-surface-100 transition-colors duration-300;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  /* Beautiful Custom Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { @apply bg-surface-200 rounded-full; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-surface-300; }
+  ::-webkit-scrollbar-thumb { @apply bg-surface-300/80 rounded-full transition-colors; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-surface-400/80; }
 }
 
 @layer components {
   /* ─── Buttons ─────────────────────────── */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-95 cursor-pointer select-none;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 active:scale-[0.98] hover:-translate-y-[1px] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-primary-500/20;
   }
   .btn-primary {
-    @apply btn bg-primary-500 text-white hover:bg-primary-600 shadow-sm hover:shadow-md shadow-primary-500/20;
+    @apply btn bg-gradient-to-r from-primary-600 to-primary-500 text-white hover:from-primary-700 hover:to-primary-600 hover:shadow-lg hover:shadow-primary-500/10 border border-primary-600/10;
   }
   .btn-secondary {
-    @apply btn bg-white text-surface-600 border border-surface-200 hover:bg-surface-50 hover:border-surface-300 hover:text-surface-800 shadow-sm;
+    @apply btn bg-surface-0 text-surface-600 border border-surface-200 hover:bg-surface-50 hover:border-surface-300 hover:text-surface-800 hover:shadow-sm;
   }
   .btn-danger {
-    @apply btn bg-red-500 text-white hover:bg-red-600 shadow-sm shadow-red-500/20;
+    @apply btn bg-red-500 text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-500/15 border border-red-600/10;
   }
   .btn-success {
-    @apply btn bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm shadow-emerald-500/20;
+    @apply btn bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/15 border border-emerald-600/10;
   }
   .btn-ghost {
     @apply btn text-surface-600 hover:bg-surface-100 hover:text-surface-800;
@@ -44,60 +188,60 @@
 
   /* ─── Form Elements ───────────────────── */
   .input {
-    @apply w-full px-4 py-2.5 rounded-xl border border-surface-200 bg-white text-surface-800
+    @apply w-full px-4 py-2.5 rounded-xl border border-surface-200 bg-surface-0 text-surface-800
            focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400
-           placeholder-surface-400 text-sm transition-all duration-200
+           placeholder-surface-400 text-sm transition-all duration-300
            hover:border-surface-300;
   }
   .label {
-    @apply block text-sm font-semibold text-surface-600 mb-1.5;
+    @apply block text-sm font-semibold text-surface-600 mb-1.5 transition-colors duration-300;
   }
 
   /* ─── Cards ────────────────────────────── */
   .card {
-    @apply bg-white rounded-2xl shadow-card border border-surface-100 p-6 transition-all duration-300;
+    @apply bg-surface-0 rounded-2xl shadow-card border border-surface-200/50 p-6 transition-all duration-300;
   }
   .card-hover {
-    @apply hover:shadow-card-hover hover:-translate-y-0.5;
+    @apply hover:shadow-card-hover hover:-translate-y-1 hover:border-primary-500/20;
   }
   .card-sm {
-    @apply bg-white rounded-xl shadow-card border border-surface-100 p-4;
+    @apply bg-surface-0 rounded-xl shadow-card border border-surface-200/50 p-4 transition-all duration-300;
   }
 
   /* ─── Badges ───────────────────────────── */
   .badge {
-    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold;
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-colors duration-300;
   }
-  .badge-green  { @apply badge bg-emerald-50 text-emerald-700 border border-emerald-200; }
-  .badge-red    { @apply badge bg-red-50 text-red-600 border border-red-200; }
-  .badge-blue   { @apply badge bg-blue-50 text-blue-700 border border-blue-200; }
-  .badge-orange { @apply badge bg-orange-50 text-orange-700 border border-orange-200; }
-  .badge-purple { @apply badge bg-purple-50 text-purple-700 border border-purple-200; }
-  .badge-gray   { @apply badge bg-surface-100 text-surface-600 border border-surface-200; }
+  .badge-green  { @apply badge bg-emerald-50 text-emerald-600 border-emerald-200/50; }
+  .badge-red    { @apply badge bg-red-50 text-red-500 border-red-200/50; }
+  .badge-blue   { @apply badge bg-blue-50 text-blue-600 border-blue-200/50; }
+  .badge-orange { @apply badge bg-orange-50 text-orange-600 border-orange-200/50; }
+  .badge-purple { @apply badge bg-purple-50 text-purple-600 border-purple-200/50; }
+  .badge-gray   { @apply badge bg-surface-100 text-surface-600 border-surface-200/50; }
 
   /* ─── Table ────────────────────────────── */
   .table-head {
-    @apply bg-surface-50 text-surface-500 text-xs font-semibold uppercase tracking-wider;
+    @apply bg-surface-50 text-surface-500 text-xs font-bold uppercase tracking-wider border-b border-surface-200/60 transition-colors duration-300;
   }
   .table-row {
-    @apply border-t border-surface-100 hover:bg-surface-50/60 transition-colors duration-150;
+    @apply border-b border-surface-200/50 hover:bg-surface-50/40 transition-colors duration-200;
   }
 
   /* ─── Nav Links (Sidebar) ──────────────── */
   .nav-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-surface-500
-           hover:bg-surface-100 hover:text-surface-800 transition-all duration-200 cursor-pointer;
+    @apply flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold text-surface-500
+           hover:bg-surface-50 hover:text-surface-800 transition-all duration-200 cursor-pointer;
   }
   .nav-link-active {
-    @apply bg-primary-50 text-primary-700 font-semibold;
+    @apply bg-primary-50 text-primary-600 shadow-sm shadow-primary-500/5 font-bold border border-primary-500/10;
   }
 
   /* ─── Page Header ──────────────────────── */
   .page-title {
-    @apply text-2xl font-bold text-surface-900 tracking-tight;
+    @apply text-2xl sm:text-3xl font-extrabold text-surface-900 tracking-tight transition-colors duration-300;
   }
   .page-subtitle {
-    @apply text-sm text-surface-500 mt-0.5;
+    @apply text-sm text-surface-500 mt-1 transition-colors duration-300;
   }
 
   /* ─── Stat Cards ────────────────────────── */
@@ -105,12 +249,12 @@
     @apply card flex items-center gap-4 p-5;
   }
   .stat-icon {
-    @apply w-12 h-12 rounded-2xl flex items-center justify-center shrink-0;
+    @apply w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-md transition-transform duration-300 group-hover:scale-110;
   }
 
   /* ─── Search Input ──────────────────────── */
   .search-input {
-    @apply input pl-10 bg-surface-50 border-surface-200 focus:bg-white;
+    @apply input pl-10 bg-surface-50 border-surface-200 focus:bg-surface-0;
   }
 }
 
@@ -119,4 +263,20 @@
   @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-primary-700;
 }
 
-.sidebar-width { width: 240px; min-width: 240px; }
+.sidebar-width { width: 260px; min-width: 260px; }
+
+/* Custom Glow Orbs for Landing Page */
+.glow-orb {
+  filter: blur(100px);
+  opacity: 0.15;
+  pointer-events: none;
+  position: absolute;
+  border-radius: 9999px;
+  mix-blend-mode: plus-lighter;
+}
+
+/* High Legibility Urdu Styling override */
+[lang="ur"], .urdu-text {
+  font-family: 'Noto Naskh Arabic', 'Inter', sans-serif;
+  line-height: 1.8;
+}

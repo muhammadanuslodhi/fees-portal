@@ -96,7 +96,7 @@ export default function Dashboard() {
             </svg>
             <input
               type="text"
-              className="w-full pl-10 pr-10 py-2.5 bg-white border border-surface-200 rounded-xl text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all shadow-sm"
+              className="w-full pl-10 pr-10 py-2.5 bg-surface-0 border border-surface-200 rounded-xl text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all shadow-sm"
               placeholder="Search areas or members..."
               value={searchQuery}
               onChange={(e) => {
@@ -123,7 +123,7 @@ export default function Dashboard() {
 
           {/* Suggestions Dropdown */}
           {showDropdown && searchQuery.trim() && (
-            <div className="absolute left-0 right-0 mt-2 bg-white border border-surface-200 rounded-xl shadow-lg z-50 overflow-hidden divide-y divide-surface-100 max-h-80 overflow-y-auto animate-scale-in">
+            <div className="absolute left-0 right-0 mt-2 bg-surface-0 border border-surface-200 rounded-xl shadow-lg z-50 overflow-hidden divide-y divide-surface-200/50 max-h-80 overflow-y-auto animate-scale-in">
               {searchLoading ? (
                 <div className="flex items-center justify-center py-6 gap-2 text-surface-500 text-sm font-medium">
                   <div className="w-4 h-4 rounded-full border-2 border-surface-200 border-t-primary-500 animate-spin"></div>
@@ -145,7 +145,7 @@ export default function Dashboard() {
                               setShowDropdown(false);
                               nav(`/fees/${area.id}`);
                             }}
-                            className="w-full text-left px-3 py-2 rounded-lg hover:bg-surface-50 flex items-center justify-between transition-colors cursor-pointer"
+                            className="w-full text-left px-3 py-2 rounded-lg hover:bg-surface-50 flex items-center justify-between transition-colors cursor-pointer animate-fade-in"
                           >
                             <div>
                               <div className="text-sm font-semibold text-surface-800">{area.areaName}</div>
@@ -172,7 +172,7 @@ export default function Dashboard() {
                               setShowDropdown(false);
                               nav(`/fees/${member.areaId?.id}?q=${member.memberId}`);
                             }}
-                            className="w-full text-left px-3 py-2 rounded-lg hover:bg-surface-50 flex items-center justify-between transition-colors cursor-pointer"
+                            className="w-full text-left px-3 py-2 rounded-lg hover:bg-surface-50 flex items-center justify-between transition-colors cursor-pointer animate-fade-in"
                           >
                             <div>
                               <div className="text-sm font-semibold text-surface-800">
@@ -223,25 +223,25 @@ export default function Dashboard() {
         <StatCard
           title="Total Areas"
           value={stats.totalAreas}
-          color="bg-blue-50 text-blue-600"
+          color="bg-blue-50/70 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400"
           icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>}
         />
         <StatCard
           title="Total Members"
           value={stats.totalMembers}
-          color="bg-purple-50 text-purple-600"
+          color="bg-purple-50/70 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400"
           icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}
         />
         <StatCard
           title="Total Collected"
           value={`Rs ${stats.totalCollected.toLocaleString()}`}
-          color="bg-emerald-50 text-emerald-600"
+          color="bg-emerald-50/70 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400"
           icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
         />
         <StatCard
           title="Total Pending"
           value={`Rs ${stats.totalPending.toLocaleString()}`}
-          color="bg-orange-50 text-orange-600"
+          color="bg-orange-50/70 text-orange-600 dark:bg-orange-950/20 dark:text-orange-400"
           icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
         />
       </div>
