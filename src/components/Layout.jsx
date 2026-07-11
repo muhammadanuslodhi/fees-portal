@@ -48,12 +48,17 @@ export default function Layout() {
   const nav = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [theme, setTheme] = useState(() => localStorage.getItem('app-theme') || 'emerald-light');
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('dark-mode') === 'true');
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('app-theme', theme);
-  }, [theme]);
+    if (darkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('dark-mode', 'true');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('dark-mode', 'false');
+    }
+  }, [darkMode]);
 
   const handleLogout = () => { logout(); nav('/login'); };
   const initials = username ? username.slice(0, 2).toUpperCase() : 'AD';
@@ -161,62 +166,33 @@ export default function Layout() {
         </nav>
 
         {/* Theme switcher */}
-        <div className="px-4 py-3.5 border-t border-surface-200/50 bg-surface-50/50">
+        <div className="px-4 py-3 border-t border-surface-200/50 bg-surface-50/50">
           <div className="text-[10px] font-extrabold text-surface-400 uppercase tracking-widest mb-2 px-1">Appearance</div>
-          <div className="grid grid-cols-2 gap-1.5">
-            <button
-              onClick={() => setTheme('emerald-light')}
-              className={`flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
-                theme === 'emerald-light'
-                  ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/20'
-                  : 'bg-surface-0 text-surface-600 border-surface-200/60 hover:bg-surface-100 hover:text-surface-800'
-              }`}
-              title="Emerald Light"
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${theme === 'emerald-light' ? 'bg-white' : 'bg-emerald-500'}`}></span>
-              Emerald
-            </button>
-            <button
-              onClick={() => setTheme('indigo-light')}
-              className={`flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
-                theme === 'indigo-light'
-                  ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/20'
-                  : 'bg-surface-0 text-surface-600 border-surface-200/60 hover:bg-surface-100 hover:text-surface-800'
-              }`}
-              title="Indigo Light"
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${theme === 'indigo-light' ? 'bg-white' : 'bg-indigo-500'}`}></span>
-              Indigo
-            </button>
-            <button
-              onClick={() => setTheme('emerald-dark')}
-              className={`flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
-                theme === 'emerald-dark'
-                  ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/20'
-                  : 'bg-surface-0 text-surface-600 border-surface-200/60 hover:bg-surface-100 hover:text-surface-800'
-              }`}
-              title="Emerald Dark"
-            >
-              <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-              Em. Dark
-            </button>
-            <button
-              onClick={() => setTheme('indigo-dark')}
-              className={`flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
-                theme === 'indigo-dark'
-                  ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/20'
-                  : 'bg-surface-0 text-surface-600 border-surface-200/60 hover:bg-surface-100 hover:text-surface-800'
-              }`}
-              title="Indigo Dark"
-            >
-              <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-              Ind. Dark
-            </button>
-          </div>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="w-full flex items-center justify-between px-3 py-2 bg-surface-0 border border-surface-200 rounded-xl text-xs font-semibold text-surface-700 hover:bg-surface-100 hover:text-surface-900 shadow-sm transition-all select-none"
+          >
+            <span className="flex items-center gap-2">
+              {darkMode ? (
+                <>
+                  <svg className="w-4 h-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                  <span>Dark Theme</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4 text-accent-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m2.828-9.9a5 5 0 11-7.07 7.07 5 5 0 017.07-7.07z" />
+                  </svg>
+                  <span>Light Theme</span>
+                </>
+              )}
+            </span>
+            <div className={`w-8 h-4 rounded-full transition-colors relative ${darkMode ? 'bg-primary-500' : 'bg-surface-300'}`}>
+              <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-[1px] transition-all shadow-sm ${darkMode ? 'right-[1px]' : 'left-[1px]'}`}></div>
+            </div>
+          </button>
         </div>
 
         {/* User + Logout */}
