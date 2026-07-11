@@ -293,6 +293,27 @@ export default function Members() {
               </div>
             </div>
 
+            {/* Fee Summary */}
+            {!profileLoading && memberFees.length > 0 && (
+              <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
+                <h3 className="font-semibold text-surface-900 mb-3">Total Fees Summary</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white p-3 rounded-lg border border-surface-200">
+                    <div className="text-xs text-surface-500">Total Paid</div>
+                    <div className="text-xl font-bold text-green-600">
+                      {memberFees.reduce((sum, fee) => sum + (fee.totalAmount - fee.pendingAmount), 0)}
+                    </div>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-surface-200">
+                    <div className="text-xs text-surface-500">Total Pending</div>
+                    <div className="text-xl font-bold text-red-600">
+                      {memberFees.reduce((sum, fee) => sum + fee.pendingAmount, 0)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Fee Records */}
             <div>
               <h3 className="font-semibold text-surface-900 mb-3">Fee Records</h3>
