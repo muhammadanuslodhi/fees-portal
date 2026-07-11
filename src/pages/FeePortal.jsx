@@ -120,12 +120,7 @@ export default function FeePortal() {
     doc.save(`${report.area.areaName}-${year}.pdf`);
   };
 
-  if (loading || !report) return (
-    <div className="flex flex-col items-center justify-center py-32 gap-3">
-      <div className="w-10 h-10 rounded-full border-4 border-surface-200 border-t-primary-500 animate-spin"></div>
-      <p className="text-surface-500 text-sm font-medium">Loading fee records...</p>
-    </div>
-  );
+  if (!report) return null;
 
   const filtered = report.rows.filter(r =>
     !search || r.member.memberName.toLowerCase().includes(search.toLowerCase()) || r.member.memberId.toLowerCase().includes(search.toLowerCase())

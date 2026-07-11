@@ -148,13 +148,7 @@ export default function Members() {
       </div>
 
       {/* Content */}
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-3">
-          <div className="w-10 h-10 rounded-full border-4 border-surface-200 border-t-primary-500 animate-spin"></div>
-          <p className="text-surface-500 text-sm">Loading members...</p>
-        </div>
-      ) : (
-        <>
+      <>
           {/* Mobile cards */}
           <div className="sm:hidden space-y-3">
             {paged.map(m => (
@@ -260,7 +254,6 @@ export default function Members() {
             </div>
           )}
         </>
-      )}
 
       {/* Add/Edit Modal */}
       {show && (

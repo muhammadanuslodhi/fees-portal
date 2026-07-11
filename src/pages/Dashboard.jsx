@@ -71,13 +71,6 @@ export default function Dashboard() {
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center py-32 gap-3">
-      <div className="w-10 h-10 rounded-full border-4 border-surface-200 border-t-primary-500 animate-spin"></div>
-      <p className="text-surface-500 text-sm font-medium">Loading dashboard...</p>
-    </div>
-  );
-
   return (
     <div className="space-y-6 animate-slide-up">
 

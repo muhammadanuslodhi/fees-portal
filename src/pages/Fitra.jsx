@@ -135,12 +135,7 @@ export default function Fitra() {
       </div>
 
       {/* Data */}
-      {loading ? (
-        <div className="flex justify-center items-center py-24">
-          <div className="w-10 h-10 rounded-full border-4 border-surface-200 border-t-primary-500 animate-spin"></div>
-        </div>
-      ) : (
-        <>
+      <>
           {/* Mobile */}
           <div className="sm:hidden space-y-3">
             {filtered.map(r => (
@@ -223,7 +218,6 @@ export default function Fitra() {
             </table>
           </div>
         </>
-      )}
 
       {/* Modal */}
       {show && (
