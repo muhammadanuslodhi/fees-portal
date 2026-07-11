@@ -61,33 +61,41 @@ const sendLoginNotification = async (ip, userAgent, loginTime) => {
 };
 
 exports.login = async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) return res.status(400).json({ message: 'Username and password required' });
-  
-  let account = await prisma.admin.findUnique({ where: { username } });
-  let role = 'admin';
-  
-  if (!account) {
-    account = await prisma.user.findUnique({ where: { username } });
-    role = 'user';
-  }
-  
-  if (!account) return res.status(401).json({ message: 'Invalid credentials' });
-  const ok = await bcrypt.compare(password, account.password);
-  if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
-  
-  // Track IP, device, and time
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
-  const userAgent = req.headers['user-agent'] || 'Unknown Device';
-  const loginTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi' }) + ' (PKT)';
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).json({ message: 'Username and password required' });
+    
+    let account = await prisma.admin.findUnique({ where: { username } });
+    let role = 'admin';
+    
+    if (!account) {
+      account = await prisma.user.findUnique({ where: { username } });
+      role = 'user';
+    }
+    
+    if (!account) return res.status(401).json({ message: 'Invalid credentials' });
+    const ok = await bcrypt.compare(password, account.password);
+    if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
+    
+    // Track IP, device, and time
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
+    const userAgent = req.headers['user-agent'] || 'Unknown Device';
+    const loginTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi' }) + ' (PKT)';
 
-  // Send the notification email asynchronously (do not block client response)
-  if (role === 'admin') {
-    sendLoginNotification(ip, userAgent, loginTime);
-  }
+    // Send the notification email asynchronously (do not block client response)
+    if (role === 'admin') {
+      sendLoginNotification(ip, userAgent, loginTime);
+    }
 
-  const token = jwt.sign({ id: account.id, username: account.username, role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || '7d' });
-  res.json({ token, username: account.username, role });
+    const token = jwt.sign({ id: account.id, username: account.username, role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || '7d' });
+    res.json({ token, username: account.username, role });
+  } catch (error) {
+    console.error('Login error:', error);
+    if (error.name === 'PrismaClientInitializationError' || error.name === 'PrismaClientKnownRequestError') {
+      return res.status(503).json({ message: 'Database connection failed. Please contact database admin.' });
+    }
+    res.status(500).json({ message: 'Internal server error during login' });
+  }
 };
 
 exports.signup = async (req, res) => {
