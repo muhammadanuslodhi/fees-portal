@@ -10,7 +10,15 @@ export default function Members() {
   const pageSize = 10;
   const [show, setShow] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ memberName:'', fatherName:'', areaId:'' });
+  const [form, setForm] = useState({ 
+    memberName: '', 
+    fatherName: '', 
+    areaId: '', 
+    cnic: '', 
+    dateOfBirth: '', 
+    phoneNo: '', 
+    address: '' 
+  });
   const [loading, setLoading] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
@@ -27,8 +35,32 @@ export default function Members() {
   useEffect(() => { api.get('/areas').then(r => setAreas(r.data)); load(); }, []);
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [filter.areaId]);
 
-  const openNew = () => { setEditing(null); setForm({ memberName:'', fatherName:'', areaId: areas[0]?.id || '' }); setShow(true); };
-  const openEdit = (m) => { setEditing(m); setForm({ memberName:m.memberName, fatherName:m.fatherName, areaId:m.areaId?.id||m.areaId }); setShow(true); };
+  const openNew = () => { 
+    setEditing(null); 
+    setForm({ 
+      memberName: '', 
+      fatherName: '', 
+      areaId: areas[0]?.id || '', 
+      cnic: '', 
+      dateOfBirth: '', 
+      phoneNo: '', 
+      address: '' 
+    }); 
+    setShow(true); 
+  };
+  const openEdit = (m) => { 
+    setEditing(m); 
+    setForm({ 
+      memberName: m.memberName, 
+      fatherName: m.fatherName, 
+      areaId: m.areaId?.id || m.areaId,
+      cnic: m.cnic || '',
+      dateOfBirth: m.dateOfBirth ? new Date(m.dateOfBirth).toISOString().split('T')[0] : '',
+      phoneNo: m.phoneNo || '',
+      address: m.address || ''
+    }); 
+    setShow(true); 
+  };
   const openProfile = async (m) => {
     setSelectedMember(m);
     setShowProfile(true);
@@ -227,8 +259,8 @@ export default function Members() {
 
       {/* Add/Edit Modal */}
       {show && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm grid place-items-center z-50 p-4 animate-fade-in">
-          <form onSubmit={save} className="card w-full max-w-md animate-scale-in shadow-modal space-y-4">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm grid place-items-center z-50 p-4 animate-fade-in overflow-y-auto">
+          <form onSubmit={save} className="card w-full max-w-lg animate-scale-in shadow-modal space-y-4 my-8">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-lg font-bold text-surface-900">{editing ? 'Edit Member' : 'Add New Member'}</h2>
               <button type="button" className="btn-ghost p-2 rounded-lg" onClick={() => setShow(false)}>
@@ -242,6 +274,22 @@ export default function Members() {
             <div>
               <label className="label">Father's Name</label>
               <input className="input" placeholder="e.g. Ahmed Khan" value={form.fatherName} onChange={e=>setForm({...form,fatherName:e.target.value})} required />
+            </div>
+            <div>
+              <label className="label">CNIC</label>
+              <input className="input" placeholder="e.g. 12345-1234567-8" value={form.cnic} onChange={e=>setForm({...form,cnic:e.target.value})} required />
+            </div>
+            <div>
+              <label className="label">Date of Birth</label>
+              <input type="date" className="input" value={form.dateOfBirth} onChange={e=>setForm({...form,dateOfBirth:e.target.value})} />
+            </div>
+            <div>
+              <label className="label">Phone No</label>
+              <input className="input" placeholder="e.g. 0300-1234567" value={form.phoneNo} onChange={e=>setForm({...form,phoneNo:e.target.value})} />
+            </div>
+            <div>
+              <label className="label">Full Residential Address</label>
+              <textarea className="input min-h-[80px]" placeholder="Enter full address" value={form.address} onChange={e=>setForm({...form,address:e.target.value})} />
             </div>
             <div>
               <label className="label">Area</label>
@@ -280,12 +328,28 @@ export default function Members() {
                 <code className="text-sm font-bold bg-white border border-surface-200 px-2 py-1 rounded-lg text-surface-700">{selectedMember.memberId}</code>
               </div>
               <div>
+                <div className="text-xs text-surface-500 mb-1">CNIC</div>
+                <div className="font-semibold text-surface-900">{selectedMember.cnic}</div>
+              </div>
+              <div>
                 <div className="text-xs text-surface-500 mb-1">Full Name</div>
                 <div className="font-semibold text-surface-900">{selectedMember.memberName}</div>
               </div>
               <div>
                 <div className="text-xs text-surface-500 mb-1">Father's Name</div>
                 <div className="text-surface-700">{selectedMember.fatherName}</div>
+              </div>
+              <div>
+                <div className="text-xs text-surface-500 mb-1">Date of Birth</div>
+                <div className="text-surface-700">{selectedMember.dateOfBirth ? new Date(selectedMember.dateOfBirth).toLocaleDateString() : '—'}</div>
+              </div>
+              <div>
+                <div className="text-xs text-surface-500 mb-1">Phone No</div>
+                <div className="text-surface-700">{selectedMember.phoneNo || '—'}</div>
+              </div>
+              <div className="sm:col-span-2">
+                <div className="text-xs text-surface-500 mb-1">Full Residential Address</div>
+                <div className="text-surface-700">{selectedMember.address || '—'}</div>
               </div>
               <div>
                 <div className="text-xs text-surface-500 mb-1">Area</div>
@@ -333,9 +397,8 @@ export default function Members() {
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
                         {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(month => {
-                          const monthLower = month.toLowerCase();
-                          const paid = fee[`${monthLower}Paid`];
-                          const amount = fee[`${monthLower}Amount`];
+                          const paid = fee[month]?.paid;
+                          const amount = fee[month]?.amount;
                           return (
                             <div key={month} className={`p-2 rounded-lg border ${paid ? 'border-green-200 bg-green-50' : 'border-surface-200 bg-surface-50'}`}>
                               <div className="font-medium text-surface-700">{month}</div>

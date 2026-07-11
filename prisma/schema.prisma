@@ -26,15 +26,19 @@ model Area {
 }
 
 model Member {
-  id         String      @id @default(cuid())
-  memberId   String      @unique
-  memberName String
-  fatherName String
-  areaId     String
-  area       Area        @relation(fields: [areaId], references: [id], onDelete: Cascade)
-  fees       FeeRecord[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id            String      @id @default(cuid())
+  memberId      String      @unique
+  memberName    String
+  fatherName    String
+  cnic          String      @unique
+  dateOfBirth   DateTime?
+  phoneNo       String?
+  address       String?
+  areaId        String
+  area          Area        @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  fees          FeeRecord[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model FeeRecord {

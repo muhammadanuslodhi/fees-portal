@@ -32,25 +32,74 @@ exports.get = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  // auto generate memberId logic
-  const count = await prisma.member.count();
-  const nextId = 'M' + String(count + 1).padStart(5, '0');
-  
-  const m = await prisma.member.create({
-    data: {
-      ...req.body,
-      memberId: nextId
+  try {
+    // Check if CNIC already exists
+    const existingCNIC = await prisma.member.findUnique({ where: { cnic: req.body.cnic } });
+    if (existingCNIC) {
+      return res.status(400).json({ message: 'CNIC already exists' });
     }
-  });
-  res.status(201).json(m);
+    
+    // Auto generate memberId logic
+    const count = await prisma.member.count();
+    const nextId = 'M' + String(count + 1).padStart(5, '0');
+    
+    const m = await prisma.member.create({
+      data: {
+        memberName: req.body.memberName,
+        fatherName: req.body.fatherName,
+        cnic: req.body.cnic,
+        dateOfBirth: req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : null,
+        phoneNo: req.body.phoneNo,
+        address: req.body.address,
+        areaId: req.body.areaId,
+        memberId: nextId
+      }
+    });
+    res.status(201).json(m);
+  } catch (error) {
+    console.error(error);
+    if (error.code === 'P2002') { // Unique constraint failed
+      return res.status(400).json({ message: 'CNIC already exists' });
+    }
+    res.status(500).json({ message: 'Error creating member' });
+  }
 };
 
 exports.update = async (req, res) => {
-  const m = await prisma.member.update({
-    where: { id: req.params.id },
-    data: req.body
-  });
-  res.json(m);
+  try {
+    // Check if CNIC is being updated, and if it's unique
+    if (req.body.cnic) {
+      const existingCNIC = await prisma.member.findFirst({
+        where: {
+          cnic: req.body.cnic,
+          NOT: { id: req.params.id }
+        }
+      });
+      if (existingCNIC) {
+        return res.status(400).json({ message: 'CNIC already exists' });
+      }
+    }
+    
+    const m = await prisma.member.update({
+      where: { id: req.params.id },
+      data: {
+        memberName: req.body.memberName,
+        fatherName: req.body.fatherName,
+        cnic: req.body.cnic,
+        dateOfBirth: req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : null,
+        phoneNo: req.body.phoneNo,
+        address: req.body.address,
+        areaId: req.body.areaId
+      }
+    });
+    res.json(m);
+  } catch (error) {
+    console.error(error);
+    if (error.code === 'P2002') { // Unique constraint failed
+      return res.status(400).json({ message: 'CNIC already exists' });
+    }
+    res.status(500).json({ message: 'Error updating member' });
+  }
 };
 
 exports.remove = async (req, res) => {
