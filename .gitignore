@@ -9,3 +9,5 @@ uploads/*
 # Local SQLite dev database
 prisma/dev.db
 prisma/dev.db-journal
+.vercel
+.env*
